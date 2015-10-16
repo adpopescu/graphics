@@ -1,3 +1,7 @@
+#include <GL/gl.h>
+#include "VECTOR3D.h"
+#include <cstdlib>
+
 // Vertex positions of a standard size cube (width 2), centered at the origin
 // of its own Model Coordinate System
 GLfloat vertices[][3] = {{-1.0, -1.0,-1.0}, 

@@ -1,3 +1,8 @@
+#include "VECTOR3D.h"
+#include <GL/gl.h>
+#include <utility>
+
+
 struct MeshVertex
 {
 	VECTOR3D	position;
@@ -57,7 +62,7 @@ public:
 	bool InitMesh(int meshSize, VECTOR3D origin, double meshLength, double meshWidth,VECTOR3D dir1, VECTOR3D dir2);
 	void DrawMesh(int meshSize);
 	void UpdateMesh();
-	void QuadMesh::SetMaterial(VECTOR3D ambient, VECTOR3D diffuse, VECTOR3D specular, double shininess);
+	void SetMaterial(VECTOR3D ambient, VECTOR3D diffuse, VECTOR3D specular, double shininess);
 	void ComputeNormals();
 	
 	
