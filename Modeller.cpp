@@ -35,7 +35,8 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 
 
 // Cube Mesh Array variables and initialization
-// ...
+CubeMesh *oneCube = createCube(); // TODO: CHANGE THIS TO A DOUBLY LINKED LIST
+
 // also add a variable to keep track of current cube mesh
 
 // Interaction State Variable
@@ -44,7 +45,9 @@ enum Action currentAction = TRANSLATE;
 
 QuadMesh *floorMesh = NULL;
 // Wall Mesh variables here
-// ...
+QuadMesh *rightMesh = NULL;
+QuadMesh *leftMesh = NULL;
+QuadMesh *backMesh = NULL;
 
 struct BoundingBox
 {
@@ -133,7 +136,35 @@ void initOpenGL(int w, int h)
   // Make sure direction vectors are such that the normals are pointing into the room
   // Use the right-hand-rule (cross product) 
   // If you are confused about this, ask in class
+
+  //right wall
+  origin  = VECTOR3D(8.0f,0.0f,8.0f);
+  dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
+  dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
+  rightMesh = new QuadMesh(meshSize, 16.0);
+  rightMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
   
+  rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+  //left wall
+  origin  = VECTOR3D(-8.0f,16.0f,8.0f);
+  dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
+  dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
+  leftMesh = new QuadMesh(meshSize, 16.0);
+  leftMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  
+  leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+  //back wall
+  origin  = VECTOR3D(8.0f,16.0f,-8.0f);
+  dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
+  dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
+  backMesh = new QuadMesh(meshSize, 16.0);
+  backMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  
+  backMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+
   // Set up the bounding box of the room
   // Change this if you change your floor/wall dimensions
   BBox.min.Set(-8.0f, 0.0, -8.0);
@@ -152,10 +183,12 @@ void display(void)
   gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
   
   // Draw all cubes (see CubeMesh.h)
-  //...
-  
+  drawCube(oneCube);
   // Draw floor and wall meshes
   floorMesh->DrawMesh(meshSize);
+  rightMesh->DrawMesh(meshSize);
+  leftMesh->DrawMesh(meshSize);
+  backMesh->DrawMesh(meshSize);
 
   glutSwapBuffers();
 }
