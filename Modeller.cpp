@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 #include <forward_list>
+#include <iterator>
 #include "VECTOR3D.h"
 #include "CubeMesh.h"
 #include "QuadMesh.h"
@@ -34,11 +35,13 @@ GLfloat light_diffuse[]   = {1.0, 1.0, 1.0, 1.0};
 GLfloat light_specular[]  = {1.0, 1.0, 1.0, 1.0};
 GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 
+using namespace std;
 
 // Cube Mesh Array variables and initialization
-std::forward_list<CubeMesh> cubeList;
+forward_list<CubeMesh*> cubeList;
 
 // also add a variable to keep track of current cube mesh
+auto currentCube = cubeList.begin();
 
 // Interaction State Variable
 enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL};
@@ -184,7 +187,9 @@ void display(void)
   gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
   
   // Draw all cubes (see CubeMesh.h)
-  //TODO
+  for(auto it : cubeList){
+      drawCube(it);
+  }
   
   // Draw floor and wall meshes
   floorMesh->DrawMesh(meshSize);
@@ -294,15 +299,158 @@ void functionKeys(int key, int x, int y)
   {
     // Create and initialize new cube
     // becomes the currently selected cube
-    
+    for ( auto it : cubeList){
+        it->selected = false;
+    }
+    cubeList.push_front(createCube());
+    cubeList.front()->selected = true;
+    currentCube = cubeList.begin();
   }
-  /*
+  
   // Do transformation code with arrow keys
   // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
-  else if (...)
+  else if (key == GLUT_KEY_DOWN)
+  { 
+       switch (currentAction) 
+      {
+      case TRANSLATE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->tz += 1.0;
+              }
+          }
+          break;
+      case SCALE:
+          break;
+      case ROTATE:
+          break;
+      case EXTRUDE:
+          break;
+      case RAISE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->ty -= 1.0;
+              }
+          }
+          break;
+      case SELECT:
+          break;
+      case MULTIPLESELECT:
+          break;
+      case DESELECT_ALL:
+          break;
+      }
+
+ }
+
+  else if (key == GLUT_KEY_UP)
   {
+      switch (currentAction) 
+      {
+      case TRANSLATE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->tz -= 1.0;
+              }
+          }
+          break;
+      case SCALE:
+          break;
+      case ROTATE:
+          break;
+      case EXTRUDE:
+          break;
+      case RAISE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->ty += 1.0;
+              }
+          }
+          break;
+      case SELECT:
+          break;
+      case MULTIPLESELECT:
+          break;
+      case DESELECT_ALL:
+          break;
+      }
+
+
   }
-  */
+
+  else if (key == GLUT_KEY_RIGHT)
+  {
+      switch (currentAction) 
+      {
+      case TRANSLATE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->tx += 1.0;
+              }
+          }
+          break;
+      case SCALE:
+          break;
+      case ROTATE:
+          break;
+      case EXTRUDE:
+          break;
+      case RAISE:
+          break;
+      case SELECT:
+          for ( auto it : cubeList){
+              it->selected = false;
+          }
+          if (currentCube == cubeList.end()){
+              //currentCube = cubeList.begin();
+              //currentCube->selected = true;
+              //TODO
+          }
+          else {
+              //currentCube.advance();
+              //currentCube->selected = true;
+          }
+          break;
+      case MULTIPLESELECT:
+          break;
+      case DESELECT_ALL:
+          break;
+      }
+
+
+  }
+
+  else if (key == GLUT_KEY_LEFT)
+  {
+      switch (currentAction) 
+      {
+      case TRANSLATE:
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->tx -= 1.0;
+              }
+          }
+          break;
+      case SCALE:
+          break;
+      case ROTATE:
+          break;
+      case EXTRUDE:
+          break;
+      case RAISE:
+          break;
+      case SELECT:
+          break;
+      case MULTIPLESELECT:
+          break;
+      case DESELECT_ALL:
+          break;
+      }
+
+
+  }
+  
+  
   glutPostRedisplay();
 }
 
