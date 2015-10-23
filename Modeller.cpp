@@ -11,6 +11,7 @@
 #include <math.h>
 #include <utility>
 #include <vector>
+#include <forward_list>
 #include "VECTOR3D.h"
 #include "CubeMesh.h"
 #include "QuadMesh.h"
@@ -35,7 +36,7 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 
 
 // Cube Mesh Array variables and initialization
-CubeMesh *oneCube = createCube(); // TODO: CHANGE THIS TO A DOUBLY LINKED LIST
+std::forward_list<CubeMesh> cubeList;
 
 // also add a variable to keep track of current cube mesh
 
@@ -183,7 +184,8 @@ void display(void)
   gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
   
   // Draw all cubes (see CubeMesh.h)
-  drawCube(oneCube);
+  //TODO
+  
   // Draw floor and wall meshes
   floorMesh->DrawMesh(meshSize);
   rightMesh->DrawMesh(meshSize);
@@ -292,7 +294,6 @@ void functionKeys(int key, int x, int y)
   {
     // Create and initialize new cube
     // becomes the currently selected cube
-    drawCube(oneCube);
     
   }
   /*

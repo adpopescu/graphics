@@ -126,9 +126,9 @@ void drawCube(CubeMesh *cube)
   glPushMatrix();
   // put your transform code here
   glMatrixMode(GL_MODELVIEW);
-  glTranslatef( tx, ty, tz);
-  glRotate(angle, 0.0, 1.0, 0.0);
-  glScale( sfx, sfy, sfz);
+  glTranslatef( cube->tx, cube->ty, cube->tz);
+  glRotatef(cube->angle, 0.0, 1.0, 0.0);
+  glScalef( cube->sfx, cube->sfy, cube->sfz);
 
   glBegin(GL_QUADS);
   // Back Face
