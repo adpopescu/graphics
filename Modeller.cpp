@@ -292,6 +292,7 @@ void functionKeys(int key, int x, int y)
   {
     // Create and initialize new cube
     // becomes the currently selected cube
+    drawCube(oneCube);
     
   }
   /*
