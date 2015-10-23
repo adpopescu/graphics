@@ -6,7 +6,7 @@ CFLAGS=-c -Wall -std=c++11
 
 LDFLAGS=
 
-LIBS=-lglut -lGL -lGLU
+LIBS=-framework opengl -framework cocoa -framework GLUT
 
 SOURCES=Modeller.cpp QuadMesh.cpp
 

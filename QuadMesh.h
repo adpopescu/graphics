@@ -1,5 +1,4 @@
 #include "VECTOR3D.h"
-#include <GL/gl.h>
 #include <utility>
 
 
