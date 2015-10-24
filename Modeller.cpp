@@ -401,14 +401,14 @@ void functionKeys(int key, int x, int y)
           for ( auto it : cubeList){
               it->selected = false;
           }
-          if (currentCube == cubeList.end()){
-              //currentCube = cubeList.begin();
-              //currentCube->selected = true;
-              //TODO
+          if (next(currentCube,1) == cubeList.end()){
+              printf("end of line");
+              currentCube = cubeList.begin();
+              (*currentCube)->selected = true;
           }
           else {
-              //currentCube.advance();
-              //currentCube->selected = true;
+              ++currentCube;
+              (*currentCube)->selected = true;
           }
           break;
       case MULTIPLESELECT:
