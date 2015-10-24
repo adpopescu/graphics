@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 #include <forward_list>
+#include <list>
 #include <iterator>
 #include "VECTOR3D.h"
 #include "CubeMesh.h"
@@ -38,7 +39,7 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 using namespace std;
 
 // Cube Mesh Array variables and initialization
-forward_list<CubeMesh*> cubeList;
+list<CubeMesh*> cubeList;
 
 // also add a variable to keep track of current cube mesh
 auto currentCube = cubeList.begin();
@@ -311,17 +312,27 @@ void functionKeys(int key, int x, int y)
   // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
   else if (key == GLUT_KEY_DOWN)
   { 
-       switch (currentAction) 
+      switch (currentAction) 
       {
       case TRANSLATE:
-          for( auto it : cubeList){
+
+         for( auto it : cubeList){
               if (it->selected == true){
                 it->tz += 1.0;
+             }
+         }
+
+         break;
+      case SCALE:
+ 
+         for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfz -= 1.0;
               }
           }
-          break;
-      case SCALE:
-          break;
+
+         break;
+
       case ROTATE:
           break;
       case EXTRUDE:
@@ -355,6 +366,13 @@ void functionKeys(int key, int x, int y)
           }
           break;
       case SCALE:
+
+         for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfz += 1.0;
+              }
+          }
+
           break;
       case ROTATE:
           break;
@@ -390,6 +408,13 @@ void functionKeys(int key, int x, int y)
           }
           break;
       case SCALE:
+
+         for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfx += 1.0;
+              }
+          }
+
           break;
       case ROTATE:
           break;
@@ -432,7 +457,14 @@ void functionKeys(int key, int x, int y)
           }
           break;
       case SCALE:
-          break;
+  
+         for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfx -= 1.0;
+              }
+          }
+
+        break;
       case ROTATE:
           break;
       case EXTRUDE:
@@ -440,6 +472,19 @@ void functionKeys(int key, int x, int y)
       case RAISE:
           break;
       case SELECT:
+          for ( auto it : cubeList){
+              it->selected = false;
+          }
+          if (currentCube == cubeList.begin()){
+              printf("end of line");
+              currentCube = cubeList.end();
+              --currentCube;
+              (*currentCube)->selected = true;
+          }
+          else {
+              --currentCube;
+              (*currentCube)->selected = true;
+          }
           break;
       case MULTIPLESELECT:
           break;
