@@ -9,6 +9,8 @@
 #
 # run with ./graphics-a1
 #
+# bound checking not implemented, all other components should work
+# 
 #
 # glTranslatef( cube->tx, cube->ty, cube->tz); T[{1,0,0,tx},{0,1,0,ty},{0,0,1,tz},{0,0,0,1}] * R * S * p
 #
