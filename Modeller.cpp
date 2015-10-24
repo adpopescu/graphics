@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 #include <forward_list>
+#include <list>
 #include <iterator>
 #include "VECTOR3D.h"
 #include "CubeMesh.h"
@@ -38,10 +39,10 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 using namespace std;
 
 // Cube Mesh Array variables and initialization
-forward_list<CubeMesh*> cubeList;
+list<CubeMesh*> cubeList;
 
 // also add a variable to keep track of current cube mesh
-auto currentCube = cubeList.begin();
+list<CubeMesh*>::iterator currentCube = cubeList.begin();
 
 // Interaction State Variable
 enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL};
@@ -146,25 +147,25 @@ void initOpenGL(int w, int h)
   dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
   rightMesh = new QuadMesh(meshSize, 16.0);
-  rightMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  rightMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
   
   rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
   //left wall
-  origin  = VECTOR3D(-8.0f,16.0f,8.0f);
+  origin  = VECTOR3D(-8.0f,8.0f,8.0f);
   dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
   leftMesh = new QuadMesh(meshSize, 16.0);
-  leftMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  leftMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
   
   leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
   //back wall
-  origin  = VECTOR3D(8.0f,16.0f,-8.0f);
+  origin  = VECTOR3D(8.0f,8.0f,-8.0f);
   dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
   backMesh = new QuadMesh(meshSize, 16.0);
-  backMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
   
   backMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
@@ -311,7 +312,7 @@ void functionKeys(int key, int x, int y)
   // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
   else if (key == GLUT_KEY_DOWN)
   { 
-       switch (currentAction) 
+      switch (currentAction) 
       {
       case TRANSLATE:
           for( auto it : cubeList){
@@ -402,13 +403,13 @@ void functionKeys(int key, int x, int y)
               it->selected = false;
           }
           if (currentCube == cubeList.end()){
-              //currentCube = cubeList.begin();
-              //currentCube->selected = true;
+              currentCube = cubeList.begin();
+              (*currentCube)->selected = true;
               //TODO
           }
           else {
-              //currentCube.advance();
-              //currentCube->selected = true;
+              advance(currentCube,1);
+              (*currentCube)->selected = true;
           }
           break;
       case MULTIPLESELECT:
