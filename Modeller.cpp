@@ -11,7 +11,6 @@
 #include <math.h>
 #include <utility>
 #include <vector>
-#include <forward_list>
 #include <list>
 #include <iterator>
 #include "VECTOR3D.h"
@@ -147,25 +146,25 @@ void initOpenGL(int w, int h)
   dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
   rightMesh = new QuadMesh(meshSize, 16.0);
-  rightMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  rightMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
   
   rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
   //left wall
-  origin  = VECTOR3D(-8.0f,16.0f,8.0f);
+  origin  = VECTOR3D(-8.0f,8.0f,8.0f);
   dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
   leftMesh = new QuadMesh(meshSize, 16.0);
-  leftMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  leftMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
   
   leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
   //back wall
-  origin  = VECTOR3D(8.0f,16.0f,-8.0f);
+  origin  = VECTOR3D(8.0f,8.0f,-8.0f);
   dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
   dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
   backMesh = new QuadMesh(meshSize, 16.0);
-  backMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+  backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
   
   backMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
@@ -173,7 +172,7 @@ void initOpenGL(int w, int h)
   // Set up the bounding box of the room
   // Change this if you change your floor/wall dimensions
   BBox.min.Set(-8.0f, 0.0, -8.0);
-  BBox.max.Set( 8.0f, 6.0,  8.0);
+  BBox.max.Set( 8.0f, 8.0,  8.0);
 }
 
 
@@ -287,6 +286,9 @@ void keyboard(unsigned char key, int x, int y)
 	  break;
   case '-':
 	  currentAction = DESELECT_ALL;
+      for ( auto it : cubeList){
+        it->selected = false;
+      }
 	  break;
   }
   glutPostRedisplay();
@@ -315,28 +317,50 @@ void functionKeys(int key, int x, int y)
       switch (currentAction) 
       {
       case TRANSLATE:
-
-         for( auto it : cubeList){
-              if (it->selected == true){
+          /*bool valid = true;
+          for( auto it : cubeList){
+            VECTOR3D minCube;
+            VECTOR3D maxCube;
+            if (it->selected == true){
                 it->tz += 1.0;
-             }
-         }
-
+                getBBox(it, &minCube, &maxCube);
+                it->tz -= 1.0;
+                if(!checkBounds(&minCube, &maxCube)){
+                    valid = false;
+                    break;
+                }
+            }
+          }*/
+         //if(valid){ 
+            for( auto it : cubeList){
+                if (it->selected == true){
+                    it->tz += 1.0;
+                 }
+            }
+         //}
          break;
       case SCALE:
  
-         for( auto it : cubeList){
+          for( auto it : cubeList){
               if (it->selected == true){
                 it->sfz -= 1.0;
               }
           }
 
-         break;
+        break;
 
       case ROTATE:
           break;
       case EXTRUDE:
-          break;
+          
+           for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfy -= 0.5;
+                it->ty -= 0.5;
+              }
+          }
+
+        break;
       case RAISE:
           for( auto it : cubeList){
               if (it->selected == true){
@@ -377,7 +401,15 @@ void functionKeys(int key, int x, int y)
       case ROTATE:
           break;
       case EXTRUDE:
-          break;
+ 
+          for( auto it : cubeList){
+              if (it->selected == true){
+                it->sfy += 0.5;
+                it->ty += 0.5;
+              }
+          }
+
+         break;
       case RAISE:
           for( auto it : cubeList){
               if (it->selected == true){
@@ -417,7 +449,15 @@ void functionKeys(int key, int x, int y)
 
           break;
       case ROTATE:
-          break;
+           for ( auto it : cubeList){
+            if (it->selected == true){
+                it->angle += 5.0;
+                if (it->angle == 360.0){
+                    it->angle = 0.0;
+                }
+            }
+          }
+         break;
       case EXTRUDE:
           break;
       case RAISE:
@@ -435,8 +475,19 @@ void functionKeys(int key, int x, int y)
               ++currentCube;
               (*currentCube)->selected = true;
           }
-          break;
+         break;
       case MULTIPLESELECT:
+          
+          if (next(currentCube,1) == cubeList.end()){
+              printf("end of line");
+              currentCube = cubeList.begin();
+              (*currentCube)->selected = true;
+          }
+          else {
+              ++currentCube;
+              (*currentCube)->selected = true;
+          }
+ 
           break;
       case DESELECT_ALL:
           break;
@@ -466,13 +517,21 @@ void functionKeys(int key, int x, int y)
 
         break;
       case ROTATE:
-          break;
+          for ( auto it : cubeList){
+            if (it->selected == true){
+                it->angle -= 5.0;
+                if (it->angle == -360.0){
+                    it->angle = 0.0;
+                }
+            }
+          }
+           break;
       case EXTRUDE:
           break;
       case RAISE:
           break;
       case SELECT:
-          for ( auto it : cubeList){
+           for ( auto it : cubeList){
               it->selected = false;
           }
           if (currentCube == cubeList.begin()){
@@ -485,8 +544,19 @@ void functionKeys(int key, int x, int y)
               --currentCube;
               (*currentCube)->selected = true;
           }
-          break;
+         break;
       case MULTIPLESELECT:
+          
+          if (currentCube == cubeList.begin()){
+              printf("end of line");
+              currentCube = cubeList.end();
+              --currentCube;
+              (*currentCube)->selected = true;
+          }
+          else {
+              --currentCube;
+              (*currentCube)->selected = true;
+          }
           break;
       case DESELECT_ALL:
           break;
@@ -499,4 +569,23 @@ void functionKeys(int key, int x, int y)
   glutPostRedisplay();
 }
 
+bool checkBounds(VECTOR3D *minCube, VECTOR3D *maxCube){
 
+    VECTOR3D minCheck;
+    VECTOR3D maxCheck;
+
+    minCheck.x = minCube->x - BBox.min.x;
+    minCheck.y = minCube->y - BBox.min.y;
+    minCheck.z = minCube->z - BBox.min.z;
+
+    maxCheck.x = BBox.max.x - maxCube->x;
+    maxCheck.y = BBox.max.y - maxCube->y;
+    maxCheck.z = BBox.max.z - maxCube->z;
+
+    if((minCheck.x*minCheck.y*minCheck.z) < 0.0) return false;
+    
+    if((maxCheck.x*maxCheck.y*maxCheck.z) < 0.0) return false;
+
+    return true;
+
+}

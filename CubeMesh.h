@@ -58,7 +58,7 @@ CubeMesh *createCube()
   newCube->angle = 0.0;
   newCube->sfx = newCube->sfy = newCube->sfz = 1.0;
   newCube->tx = 0.0;
-  newCube->ty = 0.0;
+  newCube->ty = 1.0; //starts on the floor
   newCube->tz = 0.0;
   newCube->center.Set(0,0,0);
   newCube->dim.Set(2.0f,2.0f,2.0f);
@@ -99,7 +99,13 @@ CubeMesh *createCube()
 // Use this function for collision detection of cube and walls/floor
 void getBBox(CubeMesh *cube, VECTOR3D *min, VECTOR3D *max)
 {
-	
+    min->SetX(-1.0 * cube->sfx + cube->tx);
+    min->SetY(-1.0 * cube->sfy + cube->ty);
+    min->SetZ(-1.0 * cube->sfz + cube->tz);
+
+    max->SetX(1.0 * cube->sfx + cube->tx);
+    max->SetY(1.0 * cube->sfy + cube->ty);
+    max->SetZ(1.0 * cube->sfz + cube->tz);
 }
 
 void drawCube(CubeMesh *cube)
