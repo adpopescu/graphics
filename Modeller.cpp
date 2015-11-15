@@ -53,11 +53,13 @@ QuadMesh *rightMesh = NULL;
 QuadMesh *leftMesh = NULL;
 QuadMesh *backMesh = NULL;
 
-struct BoundingBox
+typedef struct BoundingBox
 {
   VECTOR3D min;
   VECTOR3D max;
 } BBox;
+
+BBox roomBBox;
 
 // Default Mesh Size
 int meshSize = 16;
@@ -171,8 +173,8 @@ void initOpenGL(int w, int h)
 
   // Set up the bounding box of the room
   // Change this if you change your floor/wall dimensions
-  BBox.min.Set(-8.0f, 0.0, -8.0);
-  BBox.max.Set( 8.0f, 8.0,  8.0);
+  roomBBox.min.Set(-8.0f, 0.0, -8.0);
+  roomBBox.max.Set( 8.0f, 8.0,  8.0);
 }
 
 
@@ -254,6 +256,7 @@ void mouseMotionHandler(int xMouse, int yMouse)
 
 VECTOR3D ScreenToWorld(int x, int y)
 {
+
 	// you will need this if you use the mouse
 	return VECTOR3D(0);
 }// ScreenToWorld()
@@ -574,13 +577,13 @@ bool checkBounds(VECTOR3D *minCube, VECTOR3D *maxCube){
     VECTOR3D minCheck;
     VECTOR3D maxCheck;
 
-    minCheck.x = minCube->x - BBox.min.x;
-    minCheck.y = minCube->y - BBox.min.y;
-    minCheck.z = minCube->z - BBox.min.z;
+    minCheck.x = minCube->x - roomBBox.min.x;
+    minCheck.y = minCube->y - roomBBox.min.y;
+    minCheck.z = minCube->z - roomBBox.min.z;
 
-    maxCheck.x = BBox.max.x - maxCube->x;
-    maxCheck.y = BBox.max.y - maxCube->y;
-    maxCheck.z = BBox.max.z - maxCube->z;
+    maxCheck.x = roomBBox.max.x - maxCube->x;
+    maxCheck.y = roomBBox.max.y - maxCube->y;
+    maxCheck.z = roomBBox.max.z - maxCube->z;
 
     if((minCheck.x*minCheck.y*minCheck.z) < 0.0) return false;
     
