@@ -5,10 +5,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
 #include <utility>
 #include <vector>
 #include <list>
@@ -55,8 +52,8 @@ QuadMesh *backMesh = NULL;
 
 typedef struct BoundingBox
 {
-  VECTOR3D min;
-  VECTOR3D max;
+    VECTOR3D min;
+    VECTOR3D max;
 } BBox;
 
 BBox roomBBox;
@@ -66,22 +63,22 @@ int meshSize = 16;
 
 int main(int argc, char **argv)
 {
-  glutInit(&argc,argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-  glutInitWindowSize(500, 500);
-  glutInitWindowPosition(100, 100);
-  glutCreateWindow("Scene Modeller");
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Scene Modeller");
 
-  initOpenGL(500,500);
+    initOpenGL(500,500);
 
-  glutDisplayFunc(display);
-  glutReshapeFunc(reshape);
-  glutMouseFunc(mouse);
-  glutMotionFunc(mouseMotionHandler);
-  glutKeyboardFunc(keyboard);
-  glutSpecialFunc(functionKeys);
-  glutMainLoop();
-  return 0;
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutMouseFunc(mouse);
+    glutMotionFunc(mouseMotionHandler);
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(functionKeys);
+    glutMainLoop();
+    return 0;
 }
 
 
@@ -89,129 +86,129 @@ int main(int argc, char **argv)
 // Setup openGL */
 void initOpenGL(int w, int h)
 {
-  // Set up viewport, projection, then change to modelview matrix mode - 
-  // display function will then set up camera and modeling transforms
-  glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(60.0,1.0,0.2,80.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+    // Set up viewport, projection, then change to modelview matrix mode -
+    // display function will then set up camera and modeling transforms
+    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0,1.0,0.2,80.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-  // Set up and enable lighting
-  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-  glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-  glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
-  glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
-  
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
-  glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  
-  // Other OpenGL setup
-  glEnable(GL_DEPTH_TEST);
-  glShadeModel(GL_SMOOTH);
-  glClearColor(0.6, 0.6, 0.6, 0.0);  
-  glClearDepth(1.0f);
-  glEnable(GL_DEPTH_TEST);
-  // This one is important - renormalize normal vectors 
-  glEnable(GL_NORMALIZE);
-  
-  //Nice perspective.
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT , GL_NICEST);
-  
-  // Set up meshes
-  VECTOR3D origin  = VECTOR3D(-8.0f,0.0f,8.0f);
-  VECTOR3D dir1v   = VECTOR3D(1.0f, 0.0f, 0.0f);
-  VECTOR3D dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-  floorMesh = new QuadMesh(meshSize, 16.0);
-  floorMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
-  
-  VECTOR3D ambient = VECTOR3D(0.0f,0.0f,0.0f);
-  VECTOR3D specular= VECTOR3D(0.0f,0.0f,0.0f);
-  VECTOR3D diffuse= VECTOR3D(0.9f,0.5f,0.0f);
-  float shininess = 0.0;
-  floorMesh->SetMaterial(ambient,diffuse,specular,shininess);
+    // Set up and enable lighting
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
 
-  // Set up wall meshes
-  // Make sure direction vectors are such that the normals are pointing into the room
-  // Use the right-hand-rule (cross product) 
-  // If you are confused about this, ask in class
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position0);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
 
-  //right wall
-  origin  = VECTOR3D(8.0f,0.0f,8.0f);
-  dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
-  dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-  rightMesh = new QuadMesh(meshSize, 16.0);
-  rightMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
-  
-  rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
+    // Other OpenGL setup
+    glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_SMOOTH);
+    glClearColor(0.6, 0.6, 0.6, 0.0);
+    glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    // This one is important - renormalize normal vectors
+    glEnable(GL_NORMALIZE);
 
-  //left wall
-  origin  = VECTOR3D(-8.0f,8.0f,8.0f);
-  dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
-  dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-  leftMesh = new QuadMesh(meshSize, 16.0);
-  leftMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
-  
-  leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
+    //Nice perspective.
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT , GL_NICEST);
 
-  //back wall
-  origin  = VECTOR3D(8.0f,8.0f,-8.0f);
-  dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
-  dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
-  backMesh = new QuadMesh(meshSize, 16.0);
-  backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
-  
-  backMesh->SetMaterial(ambient,diffuse,specular,shininess);
+    // Set up meshes
+    VECTOR3D origin  = VECTOR3D(-8.0f,0.0f,8.0f);
+    VECTOR3D dir1v   = VECTOR3D(1.0f, 0.0f, 0.0f);
+    VECTOR3D dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
+    floorMesh = new QuadMesh(meshSize, 16.0);
+    floorMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+
+    VECTOR3D ambient = VECTOR3D(0.0f,0.0f,0.0f);
+    VECTOR3D specular= VECTOR3D(0.0f,0.0f,0.0f);
+    VECTOR3D diffuse= VECTOR3D(0.9f,0.5f,0.0f);
+    float shininess = 0.0;
+    floorMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+    // Set up wall meshes
+    // Make sure direction vectors are such that the normals are pointing into the room
+    // Use the right-hand-rule (cross product)
+    // If you are confused about this, ask in class
+
+    //right wall
+    origin  = VECTOR3D(8.0f,0.0f,8.0f);
+    dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
+    dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
+    rightMesh = new QuadMesh(meshSize, 16.0);
+    rightMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
+
+    rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+    //left wall
+    origin  = VECTOR3D(-8.0f,8.0f,8.0f);
+    dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
+    dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
+    leftMesh = new QuadMesh(meshSize, 16.0);
+    leftMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
+
+    leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
+
+    //back wall
+    origin  = VECTOR3D(8.0f,8.0f,-8.0f);
+    dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
+    dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
+    backMesh = new QuadMesh(meshSize, 16.0);
+    backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
+
+    backMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
 
-  // Set up the bounding box of the room
-  // Change this if you change your floor/wall dimensions
-  roomBBox.min.Set(-8.0f, 0.0, -8.0);
-  roomBBox.max.Set( 8.0f, 8.0,  8.0);
+    // Set up the bounding box of the room
+    // Change this if you change your floor/wall dimensions
+    roomBBox.min.Set(-8.0f, 0.0, -8.0);
+    roomBBox.max.Set( 8.0f, 8.0,  8.0);
 }
 
 
 
 void display(void)
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-  glLoadIdentity();
-  
-  // Set up the camera
-  gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
-  
-  // Draw all cubes (see CubeMesh.h)
-  for(auto it : cubeList){
-      drawCube(it);
-  }
-  
-  // Draw floor and wall meshes
-  floorMesh->DrawMesh(meshSize);
-  rightMesh->DrawMesh(meshSize);
-  leftMesh->DrawMesh(meshSize);
-  backMesh->DrawMesh(meshSize);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glutSwapBuffers();
+    glLoadIdentity();
+
+    // Set up the camera
+    gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
+
+    // Draw all cubes (see CubeMesh.h)
+    for(auto it : cubeList){
+        drawCube(it);
+    }
+
+    // Draw floor and wall meshes
+    floorMesh->DrawMesh(meshSize);
+    rightMesh->DrawMesh(meshSize);
+    leftMesh->DrawMesh(meshSize);
+    backMesh->DrawMesh(meshSize);
+
+    glutSwapBuffers();
 }
 
 
 // Called at initialization and whenever user resizes the window */
 void reshape(int w, int h)
 {
-  glViewport(0, 0, (GLsizei) w, (GLsizei) h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(60.0,1.0,0.2,40.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+    glViewport(0, 0, (GLsizei) w, (GLsizei) h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0,1.0,0.2,40.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
 }
 
@@ -220,356 +217,357 @@ VECTOR3D pos = VECTOR3D(0,0,0);
 // Mouse button callback - use only if you want to 
 void mouse(int button, int state, int x, int y)
 {
-  currentButton = button;
+    currentButton = button;
 
-  switch(button)
-  {
-  case GLUT_LEFT_BUTTON:
-    if (state == GLUT_DOWN)
-	{
-	  ;
-	  
-	}
-	break;
-  case GLUT_RIGHT_BUTTON:
-    if (state == GLUT_DOWN)
-	{
-	  ; 
-	}
-	break;
-  default:
-	break;
-  }
-  glutPostRedisplay();
+    switch(button)
+    {
+        case GLUT_LEFT_BUTTON:
+            if (state == GLUT_DOWN)
+            {
+                ;
+
+            }
+            break;
+        case GLUT_RIGHT_BUTTON:
+            if (state == GLUT_DOWN)
+            {
+                ;
+            }
+            break;
+        default:
+            break;
+    }
+    glutPostRedisplay();
 }
 
 // Mouse motion callback - use only if you want to 
 void mouseMotionHandler(int xMouse, int yMouse)
 {
-  if (currentButton == GLUT_LEFT_BUTTON)
-  {
-	  ;
-  }
-  glutPostRedisplay();
+    if (currentButton == GLUT_LEFT_BUTTON)
+    {
+        ;
+    }
+    glutPostRedisplay();
 }
 
 
 VECTOR3D ScreenToWorld(int x, int y)
 {
 
-	// you will need this if you use the mouse
-	return VECTOR3D(0);
+    // you will need this if you use the mouse
+    return VECTOR3D(0);
 }// ScreenToWorld()
 
 /* Handles input from the keyboard, non-arrow keys */
 void keyboard(unsigned char key, int x, int y)
 {
-  switch (key) 
-  {
-  case 't':
-      currentAction = TRANSLATE;
-	  break;
-  case 's':
-	  currentAction = SCALE;
-	  break;
-  case 'r':
-	  currentAction = ROTATE;
-	  break;
-  case 'e':
-	  currentAction = EXTRUDE;
-	  break;
-  case 'h':
-	  currentAction = RAISE;
-	  break;
-  case 'c':
-	  currentAction = SELECT;
-	  break;
-  case '+':
-	  currentAction = MULTIPLESELECT;
-	  break;
-  case '-':
-	  currentAction = DESELECT_ALL;
-      for ( auto it : cubeList){
-        it->selected = false;
-      }
-	  break;
-  }
-  glutPostRedisplay();
+    switch (key)
+    {
+        case 't':
+            currentAction = TRANSLATE;
+            break;
+        case 's':
+            currentAction = SCALE;
+            break;
+        case 'r':
+            currentAction = ROTATE;
+            break;
+        case 'e':
+            currentAction = EXTRUDE;
+            break;
+        case 'h':
+            currentAction = RAISE;
+            break;
+        case 'c':
+            currentAction = SELECT;
+            break;
+        case '+':
+            currentAction = MULTIPLESELECT;
+            break;
+        case '-':
+            currentAction = DESELECT_ALL;
+            for ( auto it : cubeList){
+                it->selected = false;
+            }
+            break;
+    }
+    glutPostRedisplay();
 }
 
-void functionKeys(int key, int x, int y)
-{
-  VECTOR3D min, max;
+void functionKeys(int key, int x, int y){
 
-  if (key == GLUT_KEY_F1)
-  {
-    // Create and initialize new cube
-    // becomes the currently selected cube
-    for ( auto it : cubeList){
-        it->selected = false;
+
+    VECTOR3D min, max;
+
+    if (key == GLUT_KEY_F1)
+    {
+        // Create and initialize new cube
+        // becomes the currently selected cube
+        for ( auto it : cubeList){
+            it->selected = false;
+        }
+        cubeList.push_front(createCube());
+        cubeList.front()->selected = true;
+        currentCube = cubeList.begin();
     }
-    cubeList.push_front(createCube());
-    cubeList.front()->selected = true;
-    currentCube = cubeList.begin();
-  }
-  
-  // Do transformation code with arrow keys
-  // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
-  else if (key == GLUT_KEY_DOWN)
-  { 
-      switch (currentAction) 
-      {
-      case TRANSLATE:
-          /*bool valid = true;
-          for( auto it : cubeList){
-            VECTOR3D minCube;
-            VECTOR3D maxCube;
-            if (it->selected == true){
-                it->tz += 1.0;
-                getBBox(it, &minCube, &maxCube);
-                it->tz -= 1.0;
-                if(!checkBounds(&minCube, &maxCube)){
-                    valid = false;
-                    break;
+
+        // Do transformation code with arrow keys
+        // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
+    else if (key == GLUT_KEY_DOWN)
+    {
+        switch (currentAction)
+        {
+            case TRANSLATE:
+                /*bool valid = true;
+                for( auto it : cubeList){
+                  VECTOR3D minCube;
+                  VECTOR3D maxCube;
+                  if (it->selected == true){
+                      it->tz += 1.0;
+                      getBBox(it, &minCube, &maxCube);
+                      it->tz -= 1.0;
+                      if(!checkBounds(&minCube, &maxCube)){
+                          valid = false;
+                          break;
+                      }
+                  }
+                }*/
+                //if(valid){
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->tz += 1.0;
+                    }
                 }
-            }
-          }*/
-         //if(valid){ 
-            for( auto it : cubeList){
-                if (it->selected == true){
-                    it->tz += 1.0;
-                 }
-            }
-         //}
-         break;
-      case SCALE:
- 
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfz -= 1.0;
-              }
-          }
+                //}
+                break;
+            case SCALE:
 
-        break;
-
-      case ROTATE:
-          break;
-      case EXTRUDE:
-          
-           for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfy -= 0.5;
-                it->ty -= 0.5;
-              }
-          }
-
-        break;
-      case RAISE:
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->ty -= 1.0;
-              }
-          }
-          break;
-      case SELECT:
-          break;
-      case MULTIPLESELECT:
-          break;
-      case DESELECT_ALL:
-          break;
-      }
-
- }
-
-  else if (key == GLUT_KEY_UP)
-  {
-      switch (currentAction) 
-      {
-      case TRANSLATE:
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->tz -= 1.0;
-              }
-          }
-          break;
-      case SCALE:
-
-         for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfz += 1.0;
-              }
-          }
-
-          break;
-      case ROTATE:
-          break;
-      case EXTRUDE:
- 
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfy += 0.5;
-                it->ty += 0.5;
-              }
-          }
-
-         break;
-      case RAISE:
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->ty += 1.0;
-              }
-          }
-          break;
-      case SELECT:
-          break;
-      case MULTIPLESELECT:
-          break;
-      case DESELECT_ALL:
-          break;
-      }
-
-
-  }
-
-  else if (key == GLUT_KEY_RIGHT)
-  {
-      switch (currentAction) 
-      {
-      case TRANSLATE:
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->tx += 1.0;
-              }
-          }
-          break;
-      case SCALE:
-
-         for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfx += 1.0;
-              }
-          }
-
-          break;
-      case ROTATE:
-           for ( auto it : cubeList){
-            if (it->selected == true){
-                it->angle += 5.0;
-                if (it->angle == 360.0){
-                    it->angle = 0.0;
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfz -= 1.0;
+                    }
                 }
-            }
-          }
-         break;
-      case EXTRUDE:
-          break;
-      case RAISE:
-          break;
-      case SELECT:
-          for ( auto it : cubeList){
-              it->selected = false;
-          }
-          if (next(currentCube,1) == cubeList.end()){
-              printf("end of line");
-              currentCube = cubeList.begin();
-              (*currentCube)->selected = true;
-          }
-          else {
-              ++currentCube;
-              (*currentCube)->selected = true;
-          }
-         break;
-      case MULTIPLESELECT:
-          
-          if (next(currentCube,1) == cubeList.end()){
-              printf("end of line");
-              currentCube = cubeList.begin();
-              (*currentCube)->selected = true;
-          }
-          else {
-              ++currentCube;
-              (*currentCube)->selected = true;
-          }
- 
-          break;
-      case DESELECT_ALL:
-          break;
-      }
 
+                break;
 
-  }
+            case ROTATE:
+                break;
+            case EXTRUDE:
 
-  else if (key == GLUT_KEY_LEFT)
-  {
-      switch (currentAction) 
-      {
-      case TRANSLATE:
-          for( auto it : cubeList){
-              if (it->selected == true){
-                it->tx -= 1.0;
-              }
-          }
-          break;
-      case SCALE:
-  
-         for( auto it : cubeList){
-              if (it->selected == true){
-                it->sfx -= 1.0;
-              }
-          }
-
-        break;
-      case ROTATE:
-          for ( auto it : cubeList){
-            if (it->selected == true){
-                it->angle -= 5.0;
-                if (it->angle == -360.0){
-                    it->angle = 0.0;
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfy -= 0.5;
+                        it->ty -= 0.5;
+                    }
                 }
-            }
-          }
-           break;
-      case EXTRUDE:
-          break;
-      case RAISE:
-          break;
-      case SELECT:
-           for ( auto it : cubeList){
-              it->selected = false;
-          }
-          if (currentCube == cubeList.begin()){
-              printf("end of line");
-              currentCube = cubeList.end();
-              --currentCube;
-              (*currentCube)->selected = true;
-          }
-          else {
-              --currentCube;
-              (*currentCube)->selected = true;
-          }
-         break;
-      case MULTIPLESELECT:
-          
-          if (currentCube == cubeList.begin()){
-              printf("end of line");
-              currentCube = cubeList.end();
-              --currentCube;
-              (*currentCube)->selected = true;
-          }
-          else {
-              --currentCube;
-              (*currentCube)->selected = true;
-          }
-          break;
-      case DESELECT_ALL:
-          break;
-      }
+
+                break;
+            case RAISE:
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->ty -= 1.0;
+                    }
+                }
+                break;
+            case SELECT:
+                break;
+            case MULTIPLESELECT:
+                break;
+            case DESELECT_ALL:
+                break;
+        }
+
+    }
+
+    else if (key == GLUT_KEY_UP)
+    {
+        switch (currentAction)
+        {
+            case TRANSLATE:
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->tz -= 1.0;
+                    }
+                }
+                break;
+            case SCALE:
+
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfz += 1.0;
+                    }
+                }
+
+                break;
+            case ROTATE:
+                break;
+            case EXTRUDE:
+
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfy += 0.5;
+                        it->ty += 0.5;
+                    }
+                }
+
+                break;
+            case RAISE:
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->ty += 1.0;
+                    }
+                }
+                break;
+            case SELECT:
+                break;
+            case MULTIPLESELECT:
+                break;
+            case DESELECT_ALL:
+                break;
+        }
 
 
-  }
-  
-  
-  glutPostRedisplay();
+    }
+
+    else if (key == GLUT_KEY_RIGHT)
+    {
+        switch (currentAction)
+        {
+            case TRANSLATE:
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->tx += 1.0;
+                    }
+                }
+                break;
+            case SCALE:
+
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfx += 1.0;
+                    }
+                }
+
+                break;
+            case ROTATE:
+                for ( auto it : cubeList){
+                    if (it->selected == true){
+                        it->angle += 5.0;
+                        if (it->angle == 360.0){
+                            it->angle = 0.0;
+                        }
+                    }
+                }
+                break;
+            case EXTRUDE:
+                break;
+            case RAISE:
+                break;
+            case SELECT:
+                for ( auto it : cubeList){
+                    it->selected = false;
+                }
+                if (next(currentCube,1) == cubeList.end()){
+                    printf("end of line");
+                    currentCube = cubeList.begin();
+                    (*currentCube)->selected = true;
+                }
+                else {
+                    ++currentCube;
+                    (*currentCube)->selected = true;
+                }
+                break;
+            case MULTIPLESELECT:
+
+                if (next(currentCube,1) == cubeList.end()){
+                    printf("end of line");
+                    currentCube = cubeList.begin();
+                    (*currentCube)->selected = true;
+                }
+                else {
+                    ++currentCube;
+                    (*currentCube)->selected = true;
+                }
+
+                break;
+            case DESELECT_ALL:
+                break;
+        }
+
+
+    }
+
+    else if (key == GLUT_KEY_LEFT)
+    {
+        switch (currentAction)
+        {
+            case TRANSLATE:
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->tx -= 1.0;
+                    }
+                }
+                break;
+            case SCALE:
+
+                for( auto it : cubeList){
+                    if (it->selected == true){
+                        it->sfx -= 1.0;
+                    }
+                }
+
+                break;
+            case ROTATE:
+                for ( auto it : cubeList){
+                    if (it->selected == true){
+                        it->angle -= 5.0;
+                        if (it->angle == -360.0){
+                            it->angle = 0.0;
+                        }
+                    }
+                }
+                break;
+            case EXTRUDE:
+                break;
+            case RAISE:
+                break;
+            case SELECT:
+                for ( auto it : cubeList){
+                    it->selected = false;
+                }
+                if (currentCube == cubeList.begin()){
+                    printf("end of line");
+                    currentCube = cubeList.end();
+                    --currentCube;
+                    (*currentCube)->selected = true;
+                }
+                else {
+                    --currentCube;
+                    (*currentCube)->selected = true;
+                }
+                break;
+            case MULTIPLESELECT:
+
+                if (currentCube == cubeList.begin()){
+                    printf("end of line");
+                    currentCube = cubeList.end();
+                    --currentCube;
+                    (*currentCube)->selected = true;
+                }
+                else {
+                    --currentCube;
+                    (*currentCube)->selected = true;
+                }
+                break;
+            case DESELECT_ALL:
+                break;
+        }
+
+
+    }
+
+
+    glutPostRedisplay();
 }
 
 bool checkBounds(VECTOR3D *minCube, VECTOR3D *maxCube){
@@ -586,7 +584,7 @@ bool checkBounds(VECTOR3D *minCube, VECTOR3D *maxCube){
     maxCheck.z = roomBBox.max.z - maxCube->z;
 
     if((minCheck.x*minCheck.y*minCheck.z) < 0.0) return false;
-    
+
     if((maxCheck.x*maxCheck.y*maxCheck.z) < 0.0) return false;
 
     return true;
