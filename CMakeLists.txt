@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(graphics_a1)
+project(graphics)
 
 find_package(OpenGL)
 find_package(GLUT)
@@ -12,9 +12,9 @@ set(SOURCE_FILES
         Modeller.cpp
         QuadMesh.cpp
         QuadMesh.h
-        VECTOR3D.h)
+        VECTOR3D.h AutoMesh.cpp AutoMesh.h)
 
-add_executable(graphics_a1 ${SOURCE_FILES})
+add_executable(graphics ${SOURCE_FILES})
 
 target_link_libraries(
         ${PROJECT_NAME}

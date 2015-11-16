@@ -1,13 +1,15 @@
-# graphics-a1
+# graphics
 #
-# Makefile included
-# run make in directory to compile
+# Cmake file included
+#
+# cd build/
+# cmake ../
+# make
+# ./graphics
 #
 # must be on linux
 #
 # compiled on ubuntu 
-#
-# run with ./graphics-a1
 #
 # bound checking not implemented, all other components should work
 # 

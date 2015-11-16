@@ -10,9 +10,11 @@
 #include <vector>
 #include <list>
 #include <iterator>
+#include <iostream>
 #include "VECTOR3D.h"
 #include "CubeMesh.h"
 #include "QuadMesh.h"
+#include "AutoMesh.h"
 
 void initOpenGL(int w, int h);
 void display(void);
@@ -36,9 +38,11 @@ using namespace std;
 
 // Cube Mesh Array variables and initialization
 list<CubeMesh*> cubeList;
+list<AutoMesh*> autoList;
 
 // also add a variable to keep track of current cube mesh
 auto currentCube = cubeList.begin();
+auto currentAuto = autoList.begin();
 
 // Interaction State Variable
 enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL};
@@ -189,6 +193,9 @@ void display(void)
     for(auto it : cubeList){
         drawCube(it);
     }
+    for (auto it : autoList){
+        it->drawTank();
+    }
 
     // Draw floor and wall meshes
     floorMesh->DrawMesh(meshSize);
@@ -311,6 +318,19 @@ void functionKeys(int key, int x, int y){
         currentCube = cubeList.begin();
     }
 
+    if (key == GLUT_KEY_F2)
+    {
+        // Create and initialize new auto
+        // becomes the currently selected auto
+        for ( auto it : autoList){
+            it->selected = false;
+        }
+        AutoMesh* newAuto = new AutoMesh;
+        autoList.push_front(newAuto);
+        autoList.front()->selected = true;
+        currentAuto = autoList.begin();
+    }
+
         // Do transformation code with arrow keys
         // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
     else if (key == GLUT_KEY_DOWN)
@@ -318,65 +338,66 @@ void functionKeys(int key, int x, int y){
         switch (currentAction)
         {
             case TRANSLATE:
-                /*bool valid = true;
-                for( auto it : cubeList){
-                  VECTOR3D minCube;
-                  VECTOR3D maxCube;
-                  if (it->selected == true){
-                      it->tz += 1.0;
-                      getBBox(it, &minCube, &maxCube);
-                      it->tz -= 1.0;
-                      if(!checkBounds(&minCube, &maxCube)){
-                          valid = false;
-                          break;
-                      }
-                  }
-                }*/
-                //if(valid){
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->tz += 1.0;
+                        getBBox(it, &min, &max);
+                        if (max.z > roomBBox.max.z) {
+                            it->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+                        }
                     }
-                }
-                //}
-                break;
-            case SCALE:
 
+                }
+                break;
+
+            case SCALE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfz -= 1.0;
+                        if (it->sfz < 1.0){
+                            it->sfz = 1.0;
+                        }
                     }
                 }
-
                 break;
 
             case ROTATE:
                 break;
-            case EXTRUDE:
 
+            case EXTRUDE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfy -= 0.5;
                         it->ty -= 0.5;
+                        if (it->sfy < 0.5) {
+                            it->sfy = 0.5;
+                            it->ty += 0.5;
+                        }
                     }
                 }
-
                 break;
+
             case RAISE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->ty -= 1.0;
+                        getBBox(it, &min, &max);
+                        if (min.y < roomBBox.min.y) {
+                            it->ty = roomBBox.min.y + 0.5 * (max.y - min.y);
+                        }
                     }
                 }
                 break;
+
             case SELECT:
                 break;
+
             case MULTIPLESELECT:
                 break;
+
             case DESELECT_ALL:
                 break;
         }
-
     }
 
     else if (key == GLUT_KEY_UP)
@@ -387,41 +408,64 @@ void functionKeys(int key, int x, int y){
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->tz -= 1.0;
+                        getBBox(it, &min, &max);
+                        if (min.z < roomBBox.min.z){
+                            it->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+                        }
                     }
                 }
                 break;
-            case SCALE:
 
+            case SCALE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfz += 1.0;
+                        getBBox(it, &min, &max);
+                        //std::cout << "min: " << min.x << ", " << min.y << ", " << min.z << endl;
+                        //std::cout << "max: " << max.x << ", " << max.y << ", " << max.z << endl;
+                        if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                            (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                            it->sfz -= 1.0;
+                        }
                     }
                 }
-
                 break;
+
             case ROTATE:
                 break;
-            case EXTRUDE:
 
+            case EXTRUDE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfy += 0.5;
                         it->ty += 0.5;
+                        getBBox(it, &min, &max);
+                        if (max.y > roomBBox.max.y){
+                            it->sfy -= 0.5;
+                            it->ty -= 0.5;
+                        }
                     }
                 }
-
                 break;
+
             case RAISE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->ty += 1.0;
+                        getBBox(it, &min, &max);
+                        if (max.y > roomBBox.max.y){
+                            it->ty = roomBBox.max.y - 0.5 * (max.y - min.y);
+                        }
                     }
                 }
                 break;
+
             case SELECT:
                 break;
+
             case MULTIPLESELECT:
                 break;
+
             case DESELECT_ALL:
                 break;
         }
@@ -435,20 +479,29 @@ void functionKeys(int key, int x, int y){
         {
             case TRANSLATE:
                 for( auto it : cubeList){
-                    if (it->selected == true){
+                    if (it->selected == true) {
                         it->tx += 1.0;
+                        getBBox(it, &min, &max);
+                        if (max.x > roomBBox.max.x){
+                            it->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+                        }
                     }
                 }
                 break;
-            case SCALE:
 
+            case SCALE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfx += 1.0;
+                        getBBox(it, &min, &max);
+                        if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                            (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                            it->sfx -= 1.0;
+                        }
                     }
                 }
-
                 break;
+
             case ROTATE:
                 for ( auto it : cubeList){
                     if (it->selected == true){
@@ -459,10 +512,13 @@ void functionKeys(int key, int x, int y){
                     }
                 }
                 break;
+
             case EXTRUDE:
                 break;
+
             case RAISE:
                 break;
+
             case SELECT:
                 for ( auto it : cubeList){
                     it->selected = false;
@@ -477,8 +533,8 @@ void functionKeys(int key, int x, int y){
                     (*currentCube)->selected = true;
                 }
                 break;
-            case MULTIPLESELECT:
 
+            case MULTIPLESELECT:
                 if (next(currentCube,1) == cubeList.end()){
                     printf("end of line");
                     currentCube = cubeList.begin();
@@ -488,13 +544,11 @@ void functionKeys(int key, int x, int y){
                     ++currentCube;
                     (*currentCube)->selected = true;
                 }
-
                 break;
+
             case DESELECT_ALL:
                 break;
         }
-
-
     }
 
     else if (key == GLUT_KEY_LEFT)
@@ -505,18 +559,25 @@ void functionKeys(int key, int x, int y){
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->tx -= 1.0;
+                        getBBox(it, &min, &max);
+                        if (min.x < roomBBox.min.x){
+                            it->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+                        }
                     }
                 }
                 break;
-            case SCALE:
 
+            case SCALE:
                 for( auto it : cubeList){
                     if (it->selected == true){
                         it->sfx -= 1.0;
+                        if (it->sfx < 1.0){
+                            it->sfx = 1.0;
+                        }
                     }
                 }
-
                 break;
+
             case ROTATE:
                 for ( auto it : cubeList){
                     if (it->selected == true){
@@ -527,10 +588,13 @@ void functionKeys(int key, int x, int y){
                     }
                 }
                 break;
+
             case EXTRUDE:
                 break;
+
             case RAISE:
                 break;
+
             case SELECT:
                 for ( auto it : cubeList){
                     it->selected = false;
@@ -546,8 +610,8 @@ void functionKeys(int key, int x, int y){
                     (*currentCube)->selected = true;
                 }
                 break;
-            case MULTIPLESELECT:
 
+            case MULTIPLESELECT:
                 if (currentCube == cubeList.begin()){
                     printf("end of line");
                     currentCube = cubeList.end();
@@ -559,14 +623,11 @@ void functionKeys(int key, int x, int y){
                     (*currentCube)->selected = true;
                 }
                 break;
+
             case DESELECT_ALL:
                 break;
         }
-
-
     }
-
-
     glutPostRedisplay();
 }
 
