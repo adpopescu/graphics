@@ -6,13 +6,15 @@
 
 IceCreamConeMesh::IceCreamConeMesh() {
 
-    minX = -1.0;
-    minY = -1.0;
-    minZ = -1.0;
-    maxX = 1.0;
-    maxY = 1.0;
-    maxZ = 1.0;
-    ty = 4.0;
+    coneHeight = 2.0;
+    iceCreamRadius = 0.4;
+    minX = -0.2;
+    minY = -2.0;
+    minZ = -0.2;
+    maxX = 0.2;
+    maxY = 0.2;
+    maxZ = 0.2;
+    ty = 2.0;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;
     angle = 0;

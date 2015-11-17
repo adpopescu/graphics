@@ -25,11 +25,11 @@ public:
 
     void drawMesh();
 
-    GLfloat legRadius = 0.2;
-    GLfloat legHeight = 1.0;
-    GLfloat tableWidth = 1.0;
-    GLfloat tableHeight = 0.2;
-    GLfloat tableLength = 2.0;
+    GLfloat legRadius;
+    GLfloat legHeight;
+    GLfloat tableWidth;
+    GLfloat tableHeight;
+    GLfloat tableLength;
 };
 
 

@@ -2,7 +2,6 @@
 // Created by dapopesc on 16/11/15.
 //
 
-#include <GL/glut.h>
 #include "Mesh.h"
 
 Mesh::Mesh() {

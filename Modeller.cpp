@@ -454,7 +454,7 @@ void functionKeys(int key, int x, int y){
         currentMesh = meshList.begin();
     }
 
-    if (key == GLUT_KEY_F2)
+    else if (key == GLUT_KEY_F2)
     {
         // Create and initialize new auto
         // becomes the currently selected auto
@@ -467,7 +467,7 @@ void functionKeys(int key, int x, int y){
         currentMesh = meshList.begin();
     }
 
-    if (key == GLUT_KEY_F3)
+    else if (key == GLUT_KEY_F3)
     {
         // Create and initialize new auto
         // becomes the currently selected auto
@@ -480,7 +480,7 @@ void functionKeys(int key, int x, int y){
         currentMesh = meshList.begin();
     }
 
-    if (key == GLUT_KEY_F4)
+    else if (key == GLUT_KEY_F4)
     {
         // Create and initialize new auto
         // becomes the currently selected auto
@@ -493,16 +493,20 @@ void functionKeys(int key, int x, int y){
         currentMesh = meshList.begin();
     }
 
-    //exploration mode
-    if (key == GLUT_KEY_F5)
+        // enter exploration mode
+    else if (key == GLUT_KEY_F5)
     {
-
         if (!exploreMode){
             currentAction = EXPLORE;
             exploreMode = true;
             exploreMesh = new AutoMesh;
         }
-        else if (exploreMode){
+    }
+
+        //exit exploration mode
+    else if (key == GLUT_KEY_F6)
+    {
+        if (exploreMode){
             currentAction = TRANSLATE;
             exploreMode = false;
             meshList.push_front(exploreMesh);
@@ -510,8 +514,6 @@ void functionKeys(int key, int x, int y){
             currentMesh = meshList.begin();
             exploreMesh = NULL;
         }
-
-
     }
 
         // Do transformation code with arrow keys
@@ -550,10 +552,8 @@ void functionKeys(int key, int x, int y){
                 for( auto it : meshList){
                     if (it->selected == true){
                         it->sfy -= 0.5;
-                        it->ty -= 0.5;
                         if (it->sfy < 0.5) {
                             it->sfy = 0.5;
-                            it->ty += 0.5;
                         }
                     }
                 }
@@ -583,8 +583,19 @@ void functionKeys(int key, int x, int y){
             case EXPLORE:
                 exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
                 exploreMesh->tz += exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-
-
+                exploreMesh->getBBox(&min, &max);
+                if (max.z > roomBBox.max.z){
+                    exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+                }
+                else if (min.z < roomBBox.min.z) {
+                    exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+                }
+                if (max.x > roomBBox.max.x) {
+                    exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+                }
+                else if (min.x < roomBBox.min.x) {
+                    exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+                }
         }
     }
 
@@ -626,11 +637,9 @@ void functionKeys(int key, int x, int y){
                 for( auto it : meshList){
                     if (it->selected == true){
                         it->sfy += 0.5;
-                        it->ty += 0.5;
                         it->getBBox(&min, &max);
                         if (max.y > roomBBox.max.y){
                             it->sfy -= 0.5;
-                            it->ty -= 0.5;
                         }
                     }
                 }
@@ -660,9 +669,20 @@ void functionKeys(int key, int x, int y){
             case EXPLORE:
                 exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
                 exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
+
+                if (max.z > roomBBox.max.z){
+                    exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+                }
+                else if (min.z < roomBBox.min.z) {
+                    exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+                }
+                if (max.x > roomBBox.max.x) {
+                    exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+                }
+                else if (min.x < roomBBox.min.x) {
+                    exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+                }
         }
-
-
     }
 
     else if (key == GLUT_KEY_RIGHT)
@@ -742,7 +762,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXPLORE:
-                exploreMesh->angle += 2.0;
+                exploreMesh->angle -= 2.0;
         }
     }
 
@@ -823,7 +843,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXPLORE:
-                exploreMesh->angle -= 2.0;
+                exploreMesh->angle += 2.0;
         }
     }
     glutPostRedisplay();

@@ -6,12 +6,12 @@
 
 AutoMesh::AutoMesh() {
 
-    minX = -1.0;
-    minY = -1.0;
-    minZ = -1.0;
-    maxX = 1.0;
+    minX = -1.5;
+    minY = -0.75;
+    minZ = -1.05;
+    maxX = 1.5;
     maxY = 0.9;
-    maxZ = 1.0;
+    maxZ = 1.05;
     ty = 0.75;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;

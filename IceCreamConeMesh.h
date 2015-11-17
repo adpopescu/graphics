@@ -25,8 +25,8 @@ public:
 
     void drawMesh();
 
-    GLfloat coneHeight = 4.0;
-    GLfloat iceCreamRadius = 0.8;
+    GLfloat coneHeight;
+    GLfloat iceCreamRadius;
 
 };
 
