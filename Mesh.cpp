@@ -46,6 +46,8 @@ void Mesh::drawMesh() {
 
 void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
 
+
+
     min->SetX(minX * sfx + tx);
     min->SetY(minY * sfy + ty);
     min->SetZ(minZ * sfz + tz);

@@ -45,14 +45,26 @@ list<Mesh*> meshList;
 auto currentMesh = meshList.begin();
 
 // Interaction State Variable
-enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL};
+enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL, EXPLORE};
 enum Action currentAction = TRANSLATE;
+
+bool exploreMode = false;
+Mesh* exploreMesh = NULL;
+GLdouble exploreSpeed = 2.0;
 
 QuadMesh *floorMesh = NULL;
 // Wall Mesh variables here
 QuadMesh *rightMesh = NULL;
 QuadMesh *leftMesh = NULL;
 QuadMesh *backMesh = NULL;
+
+
+//camera variables
+GLdouble radiusCam, azimuthCam, inclinationCam;
+GLdouble camPosX, camPosY, camPosZ;
+GLdouble lookAtX, lookAtY, lookAtZ;
+
+int mousePrevX = -1, mousePrevY = -1;
 
 typedef struct BoundingBox
 {
@@ -67,6 +79,7 @@ int meshSize = 16;
 
 int main(int argc, char **argv)
 {
+
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(500, 500);
@@ -171,11 +184,17 @@ void initOpenGL(int w, int h)
 
     backMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
-
     // Set up the bounding box of the room
     // Change this if you change your floor/wall dimensions
     roomBBox.min.Set(-8.0f, 0.0, -8.0);
     roomBBox.max.Set( 8.0f, 8.0,  8.0);
+
+    //Starting Camera Position
+    radiusCam = 20.0;
+    inclinationCam = -PI/2.0;
+    azimuthCam = PI;
+
+
 }
 
 
@@ -187,11 +206,39 @@ void display(void)
     glLoadIdentity();
 
     // Set up the camera
-    gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
+    if (exploreMode){
+        camPosX = exploreMesh->tx;
+        camPosY = exploreMesh->ty + exploreMesh->maxY + 2.0;
+        camPosZ = exploreMesh->tz;
+        lookAtX = exploreMesh->tx + cos(exploreMesh->angle*2*PI/360);
+        lookAtY = camPosY;
+        lookAtZ = exploreMesh->tz + -sin(exploreMesh->angle*2*PI/360);
+    }
+    else {
+        camPosX = radiusCam * sin(inclinationCam) * sin(azimuthCam);
+        camPosY = radiusCam * cos(inclinationCam);
+        camPosZ = radiusCam * sin(inclinationCam) * cos(azimuthCam);
+        lookAtX = 0.0;
+        lookAtY = 0.0;
+        lookAtZ = 0.0;
+    }
+
+    cout << inclinationCam << endl << azimuthCam << endl << endl;
+
+    gluLookAt(camPosX, camPosY, camPosZ, lookAtX, lookAtY, lookAtZ, 0.0, 1.0, 0.0);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(60.0,1.0,0.01*radiusCam,4.0*radiusCam);
+    glMatrixMode(GL_MODELVIEW);
 
     // Draw all objects
     for (auto it : meshList){
         it->drawMesh();
+    }
+    //draw explore mesh
+    if (exploreMesh){
+        exploreMesh->drawMesh();
     }
 
     // Draw floor and wall meshes
@@ -247,19 +294,110 @@ void mouse(int button, int state, int x, int y)
 // Mouse motion callback - use only if you want to 
 void mouseMotionHandler(int xMouse, int yMouse)
 {
+    if (mousePrevX == -1 && mousePrevY == -1){
+        mousePrevX = xMouse;
+        mousePrevY = yMouse;
+    }
     if (currentButton == GLUT_LEFT_BUTTON)
     {
-        ;
+        cout << "prevX: " << mousePrevX << endl << "X: " << xMouse << endl;
+        cout << "prevY: " << mousePrevY << endl << "Y: " << yMouse << endl << endl;
+        if (xMouse > mousePrevX){
+            azimuthCam -= 0.01;
+            if (azimuthCam >= 2*PI) {
+                azimuthCam = 0.0;
+            }
+        }
+        else if (xMouse < mousePrevX){
+            azimuthCam += 0.01;
+            if (azimuthCam <= 0.0) {
+                azimuthCam = 2*PI;
+            }
+        }
+        if (yMouse > mousePrevY){
+            inclinationCam += 0.01;
+            if (inclinationCam >= -0.01) {
+                inclinationCam = -0.01;
+            }
+        }
+        else if (yMouse < mousePrevY){
+            inclinationCam -= 0.01;
+            if (inclinationCam <= -PI/2) {
+                inclinationCam = -PI/2;
+            }
+        }
+
     }
+
+    if (currentButton == GLUT_RIGHT_BUTTON){
+        if (yMouse > mousePrevY){
+            radiusCam += 0.5;
+            if (radiusCam >= 100) {
+                radiusCam = 100;
+            }
+        }
+        else if (yMouse < mousePrevY){
+            radiusCam -= 0.5;
+            if (radiusCam <= 5) {
+                radiusCam = 5;
+            }
+        }
+
+    }
+    // TODO: Implement middle button movement of what the camera is looking at. Will depend on current orientation.
+//    if (currentButton == GLUT_MIDDLE_BUTTON)
+//    {
+//        if (xMouse > mousePrevX){
+//             -= 0.01;
+//            if (azimuthCam >= 2*PI) {
+//                azimuthCam = 0.0;
+//            }
+//        }
+//        else if (xMouse < mousePrevX){
+//            azimuthCam += 0.01;
+//            if (azimuthCam <= 0.0) {
+//                azimuthCam = 2*PI;
+//            }
+//        }
+//        if (yMouse > mousePrevY){
+//            inclinationCam += 0.01;
+//            if (inclinationCam >= -0.01) {
+//                inclinationCam = -0.01;
+//            }
+//        }
+//        else if (yMouse < mousePrevY){
+//            inclinationCam -= 0.01;
+//            if (inclinationCam <= -PI/2) {
+//                inclinationCam = -PI/2;
+//            }
+//        }
+//
+//    }
+
+    mousePrevX = xMouse;
+    mousePrevY = yMouse;
     glutPostRedisplay();
 }
 
 
 VECTOR3D ScreenToWorld(int x, int y)
 {
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLfloat winX, winY, winZ;
+    GLdouble posX, posY, posZ;
 
-    // you will need this if you use the mouse
-    return VECTOR3D(0);
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+
+    winX = (float)x;
+    winY = (float)viewport[3] - (float)y;
+    // Read all pixels at given screen XY from the Depth Buffer
+    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+    return VECTOR3D((float)posX, (float)posY, (float)posZ);
 }// ScreenToWorld()
 
 /* Handles input from the keyboard, non-arrow keys */
@@ -355,6 +493,27 @@ void functionKeys(int key, int x, int y){
         currentMesh = meshList.begin();
     }
 
+    //exploration mode
+    if (key == GLUT_KEY_F5)
+    {
+
+        if (!exploreMode){
+            currentAction = EXPLORE;
+            exploreMode = true;
+            exploreMesh = new AutoMesh;
+        }
+        else if (exploreMode){
+            currentAction = TRANSLATE;
+            exploreMode = false;
+            meshList.push_front(exploreMesh);
+            meshList.front()->selected = true;
+            currentMesh = meshList.begin();
+            exploreMesh = NULL;
+        }
+
+
+    }
+
         // Do transformation code with arrow keys
         // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
     else if (key == GLUT_KEY_DOWN)
@@ -420,6 +579,12 @@ void functionKeys(int key, int x, int y){
 
             case DESELECT_ALL:
                 break;
+
+            case EXPLORE:
+                exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
+                exploreMesh->tz += exploreSpeed * sin(exploreMesh->angle*2*PI/360);
+
+
         }
     }
 
@@ -491,6 +656,10 @@ void functionKeys(int key, int x, int y){
 
             case DESELECT_ALL:
                 break;
+
+            case EXPLORE:
+                exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
+                exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
         }
 
 
@@ -571,6 +740,9 @@ void functionKeys(int key, int x, int y){
 
             case DESELECT_ALL:
                 break;
+
+            case EXPLORE:
+                exploreMesh->angle += 2.0;
         }
     }
 
@@ -649,6 +821,9 @@ void functionKeys(int key, int x, int y){
 
             case DESELECT_ALL:
                 break;
+
+            case EXPLORE:
+                exploreMesh->angle -= 2.0;
         }
     }
     glutPostRedisplay();

@@ -11,7 +11,7 @@
 #
 # compiled on ubuntu 14.04 LTS
 #
-# bound checking not implemented, all other components should work
+# Generate objects using the F1 - F4 keys.
 # 
 #
 # glTranslatef( cube->tx, cube->ty, cube->tz); T[{1,0,0,tx},{0,1,0,ty},{0,0,1,tz},{0,0,0,1}] * R * S * p

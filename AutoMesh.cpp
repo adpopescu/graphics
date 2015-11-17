@@ -10,7 +10,7 @@ AutoMesh::AutoMesh() {
     minY = -1.0;
     minZ = -1.0;
     maxX = 1.0;
-    maxY = 1.0;
+    maxY = 0.9;
     maxZ = 1.0;
     ty = 0.75;
     tx = tz = 0;
