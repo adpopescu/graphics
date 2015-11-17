@@ -8,11 +8,10 @@ find_package(GLU)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-        CubeMesh.h
         Modeller.cpp
         QuadMesh.cpp
         QuadMesh.h
-        VECTOR3D.h AutoMesh.cpp AutoMesh.h)
+        VECTOR3D.h AutoMesh.cpp AutoMesh.h Mesh.cpp Mesh.h TableMesh.cpp TableMesh.h IceCreamConeMesh.cpp IceCreamConeMesh.h)
 
 add_executable(graphics ${SOURCE_FILES})
 

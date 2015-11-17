@@ -9,7 +9,7 @@
 #
 # must be on linux
 #
-# compiled on ubuntu 
+# compiled on ubuntu 14.04 LTS
 #
 # bound checking not implemented, all other components should work
 # 

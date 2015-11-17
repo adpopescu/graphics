@@ -12,9 +12,11 @@
 #include <iterator>
 #include <iostream>
 #include "VECTOR3D.h"
-#include "CubeMesh.h"
 #include "QuadMesh.h"
 #include "AutoMesh.h"
+#include "Mesh.h"
+#include "TableMesh.h"
+#include "IceCreamConeMesh.h"
 
 void initOpenGL(int w, int h);
 void display(void);
@@ -37,12 +39,10 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 using namespace std;
 
 // Cube Mesh Array variables and initialization
-list<CubeMesh*> cubeList;
-list<AutoMesh*> autoList;
+list<Mesh*> meshList;
 
 // also add a variable to keep track of current cube mesh
-auto currentCube = cubeList.begin();
-auto currentAuto = autoList.begin();
+auto currentMesh = meshList.begin();
 
 // Interaction State Variable
 enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL};
@@ -189,12 +189,9 @@ void display(void)
     // Set up the camera
     gluLookAt(0.0,6.0,22.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
-    // Draw all cubes (see CubeMesh.h)
-    for(auto it : cubeList){
-        drawCube(it);
-    }
-    for (auto it : autoList){
-        it->drawTank();
+    // Draw all objects
+    for (auto it : meshList){
+        it->drawMesh();
     }
 
     // Draw floor and wall meshes
@@ -293,7 +290,7 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case '-':
             currentAction = DESELECT_ALL;
-            for ( auto it : cubeList){
+            for ( auto it : meshList){
                 it->selected = false;
             }
             break;
@@ -310,25 +307,52 @@ void functionKeys(int key, int x, int y){
     {
         // Create and initialize new cube
         // becomes the currently selected cube
-        for ( auto it : cubeList){
+        for ( auto it : meshList){
             it->selected = false;
         }
-        cubeList.push_front(createCube());
-        cubeList.front()->selected = true;
-        currentCube = cubeList.begin();
+        Mesh* newMesh = new Mesh;
+        meshList.push_front(newMesh);
+        meshList.front()->selected = true;
+        currentMesh = meshList.begin();
     }
 
     if (key == GLUT_KEY_F2)
     {
         // Create and initialize new auto
         // becomes the currently selected auto
-        for ( auto it : autoList){
+        for ( auto it : meshList){
             it->selected = false;
         }
         AutoMesh* newAuto = new AutoMesh;
-        autoList.push_front(newAuto);
-        autoList.front()->selected = true;
-        currentAuto = autoList.begin();
+        meshList.push_front(newAuto);
+        meshList.front()->selected = true;
+        currentMesh = meshList.begin();
+    }
+
+    if (key == GLUT_KEY_F3)
+    {
+        // Create and initialize new auto
+        // becomes the currently selected auto
+        for ( auto it : meshList){
+            it->selected = false;
+        }
+        TableMesh* newTable = new TableMesh;
+        meshList.push_front(newTable);
+        meshList.front()->selected = true;
+        currentMesh = meshList.begin();
+    }
+
+    if (key == GLUT_KEY_F4)
+    {
+        // Create and initialize new auto
+        // becomes the currently selected auto
+        for ( auto it : meshList){
+            it->selected = false;
+        }
+        IceCreamConeMesh* newIceCreamCone = new IceCreamConeMesh;
+        meshList.push_front(newIceCreamCone);
+        meshList.front()->selected = true;
+        currentMesh = meshList.begin();
     }
 
         // Do transformation code with arrow keys
@@ -338,20 +362,19 @@ void functionKeys(int key, int x, int y){
         switch (currentAction)
         {
             case TRANSLATE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->tz += 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (max.z > roomBBox.max.z) {
                             it->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
                         }
                     }
-
                 }
                 break;
 
             case SCALE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfz -= 1.0;
                         if (it->sfz < 1.0){
@@ -365,7 +388,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXTRUDE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfy -= 0.5;
                         it->ty -= 0.5;
@@ -378,10 +401,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case RAISE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->ty -= 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (min.y < roomBBox.min.y) {
                             it->ty = roomBBox.min.y + 0.5 * (max.y - min.y);
                         }
@@ -405,10 +428,10 @@ void functionKeys(int key, int x, int y){
         switch (currentAction)
         {
             case TRANSLATE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->tz -= 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (min.z < roomBBox.min.z){
                             it->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
                         }
@@ -417,10 +440,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SCALE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfz += 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         //std::cout << "min: " << min.x << ", " << min.y << ", " << min.z << endl;
                         //std::cout << "max: " << max.x << ", " << max.y << ", " << max.z << endl;
                         if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
@@ -435,11 +458,11 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXTRUDE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfy += 0.5;
                         it->ty += 0.5;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (max.y > roomBBox.max.y){
                             it->sfy -= 0.5;
                             it->ty -= 0.5;
@@ -449,10 +472,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case RAISE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->ty += 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (max.y > roomBBox.max.y){
                             it->ty = roomBBox.max.y - 0.5 * (max.y - min.y);
                         }
@@ -478,10 +501,10 @@ void functionKeys(int key, int x, int y){
         switch (currentAction)
         {
             case TRANSLATE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true) {
                         it->tx += 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (max.x > roomBBox.max.x){
                             it->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
                         }
@@ -490,10 +513,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SCALE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfx += 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
                             (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
                             it->sfx -= 1.0;
@@ -503,7 +526,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case ROTATE:
-                for ( auto it : cubeList){
+                for ( auto it : meshList){
                     if (it->selected == true){
                         it->angle += 5.0;
                         if (it->angle == 360.0){
@@ -520,29 +543,29 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SELECT:
-                for ( auto it : cubeList){
+                for ( auto it : meshList){
                     it->selected = false;
                 }
-                if (next(currentCube,1) == cubeList.end()){
+                if (next(currentMesh, 1) == meshList.end()){
                     printf("end of line");
-                    currentCube = cubeList.begin();
-                    (*currentCube)->selected = true;
+                    currentMesh = meshList.begin();
+                    (*currentMesh)->selected = true;
                 }
                 else {
-                    ++currentCube;
-                    (*currentCube)->selected = true;
+                    ++currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 break;
 
             case MULTIPLESELECT:
-                if (next(currentCube,1) == cubeList.end()){
+                if (next(currentMesh, 1) == meshList.end()){
                     printf("end of line");
-                    currentCube = cubeList.begin();
-                    (*currentCube)->selected = true;
+                    currentMesh = meshList.begin();
+                    (*currentMesh)->selected = true;
                 }
                 else {
-                    ++currentCube;
-                    (*currentCube)->selected = true;
+                    ++currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 break;
 
@@ -556,10 +579,10 @@ void functionKeys(int key, int x, int y){
         switch (currentAction)
         {
             case TRANSLATE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->tx -= 1.0;
-                        getBBox(it, &min, &max);
+                        it->getBBox(&min, &max);
                         if (min.x < roomBBox.min.x){
                             it->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
                         }
@@ -568,7 +591,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SCALE:
-                for( auto it : cubeList){
+                for( auto it : meshList){
                     if (it->selected == true){
                         it->sfx -= 1.0;
                         if (it->sfx < 1.0){
@@ -579,7 +602,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case ROTATE:
-                for ( auto it : cubeList){
+                for ( auto it : meshList){
                     if (it->selected == true){
                         it->angle -= 5.0;
                         if (it->angle == -360.0){
@@ -596,31 +619,31 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SELECT:
-                for ( auto it : cubeList){
+                for ( auto it : meshList){
                     it->selected = false;
                 }
-                if (currentCube == cubeList.begin()){
+                if (currentMesh == meshList.begin()){
                     printf("end of line");
-                    currentCube = cubeList.end();
-                    --currentCube;
-                    (*currentCube)->selected = true;
+                    currentMesh = meshList.end();
+                    --currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 else {
-                    --currentCube;
-                    (*currentCube)->selected = true;
+                    --currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 break;
 
             case MULTIPLESELECT:
-                if (currentCube == cubeList.begin()){
+                if (currentMesh == meshList.begin()){
                     printf("end of line");
-                    currentCube = cubeList.end();
-                    --currentCube;
-                    (*currentCube)->selected = true;
+                    currentMesh = meshList.end();
+                    --currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 else {
-                    --currentCube;
-                    (*currentCube)->selected = true;
+                    --currentMesh;
+                    (*currentMesh)->selected = true;
                 }
                 break;
 

@@ -189,12 +189,6 @@ void QuadMesh::DrawMesh(int meshSize)
     }
 }
 
-
-
-
-
-
-
 void QuadMesh::FreeMemory()
 {
     if(vertices)

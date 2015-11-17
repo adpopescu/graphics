@@ -2,12 +2,12 @@
 // Created by dapopesc on 16/11/15.
 //
 
-#ifndef GRAPHICS_AUTOMESH_H
-#define GRAPHICS_AUTOMESH_H
+#ifndef GRAPHICS_ICECREAMCONEMESH_H
+#define GRAPHICS_ICECREAMCONEMESH_H
 
 #include "Mesh.h"
 
-class AutoMesh : public Mesh {
+class IceCreamConeMesh : public Mesh{
 
 private:
 
@@ -20,23 +20,15 @@ private:
 
 
 public:
-
-    AutoMesh();
-    ~AutoMesh();
+    IceCreamConeMesh();
+    ~IceCreamConeMesh();
 
     void drawMesh();
 
-    float bodyWidth;
-    float bodyLength;
-    float bodyHeight;
-
-    float cockpitWidth;
-    float cockpitLength;
-    float cockpitHeight;
-
-    float wheelRadius;
-    float wheelHeight;
+    GLfloat coneHeight = 4.0;
+    GLfloat iceCreamRadius = 0.8;
 
 };
 
-#endif //GRAPHICS_AUTOMESH_H
+
+#endif //GRAPHICS_ICECREAMCONEMESH_H

@@ -2,9 +2,9 @@
 // Created by dapopesc on 16/11/15.
 //
 
-#include "AutoMesh.h"
+#include "TableMesh.h"
 
-AutoMesh::AutoMesh() {
+TableMesh::TableMesh() {
 
     minX = -1.0;
     minY = -1.0;
@@ -12,26 +12,13 @@ AutoMesh::AutoMesh() {
     maxX = 1.0;
     maxY = 1.0;
     maxZ = 1.0;
-    ty = 0.75;
+    ty = 1.0;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;
     angle = 0;
-
-    bodyWidth = 1.6;
-    bodyLength = 3.0;
-    bodyHeight = 1.0;
-
-    cockpitWidth = 1.2;
-    cockpitLength = 2.0;
-    cockpitHeight = 0.4;
-
-
-    wheelRadius = 0.25;
-    wheelHeight = 0.15;
-
 }
 
-void AutoMesh::drawMesh() {
+void TableMesh::drawMesh() {
 
     if (selected)
     {
@@ -54,80 +41,63 @@ void AutoMesh::drawMesh() {
     glRotatef(angle, 0.0, 1.0, 0.0);
     glScalef(sfx, sfy, sfz);
 
-    // draw body
+    // draw table top
     glPushMatrix();
-    glScalef(bodyLength,bodyHeight,bodyWidth);
+    glScalef(tableLength,tableHeight,tableWidth);
     glutSolidCube(1.0);
     glPopMatrix();
 
-    // draw cockpit
-    glPushMatrix();
-    glTranslatef(0.0, 0.7, 0.0);
-    glScalef(cockpitLength, cockpitHeight, cockpitWidth);
-    glutSolidCube(1.0);
-    glPopMatrix();
 
-    // draw wheels
+    // draw legs
     glPushMatrix();
-    glTranslatef(1.0,-0.5,0.85);
+    glTranslatef(-0.8,-0.1,0.3);
+    glRotatef(90, 1.0,0.0,0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
+    glutSolidCone(legRadius,legHeight,32,10);
+    //draw the cap
     gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
+    gluDisk(qobj, 0.0, legRadius, 32, 1);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-1.0,-0.5,0.85);
+    glTranslatef(-0.8,-0.1,-0.3);
+    glRotatef(90, 1.0,0.0,0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
+    glutSolidCone(legRadius,legHeight,32,10);
+    //draw the cap
     gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
+    gluDisk(qobj, 0.0, legRadius, 32, 1);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(1.0,-0.5,-0.85);
-    glRotatef(180, 0.0, 1.0, 0.0);
+    glTranslatef(0.8,-0.1,0.3);
+    glRotatef(90, 1.0,0.0,0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
+    glutSolidCone(legRadius,legHeight,32,10);
+    //draw the cap
     gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
+    gluDisk(qobj, 0.0, legRadius, 32, 1);
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-1.0,-0.5,-0.85);
-    glRotatef(180, 0.0, 1.0, 0.0);
+    glTranslatef(0.8,-0.1,-0.3);
+    glRotatef(90, 1.0,0.0,0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
+    glutSolidCone(legRadius,legHeight,32,10);
+    //draw the cap
     gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
+    gluDisk(qobj, 0.0, legRadius, 32, 1);
     glPopMatrix();
 
     gluDeleteQuadric(qobj);
 
     glPopMatrix();
-
 }
