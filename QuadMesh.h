@@ -1,14 +1,13 @@
 #include "VECTOR3D.h"
 #include <GL/gl.h>
+#include <GL/glut.h>
 #include <utility>
-
 
 struct MeshVertex
 {
     VECTOR3D	position;
     VECTOR3D    normal;
 };
-
 
 
 struct MeshQuad

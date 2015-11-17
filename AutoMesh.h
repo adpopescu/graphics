@@ -22,7 +22,6 @@ private:
 public:
 
     AutoMesh();
-    ~AutoMesh();
 
     void drawMesh();
 

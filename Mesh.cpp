@@ -9,8 +9,8 @@ Mesh::Mesh() {
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;
     angle = 0;
-    minX = minY = minZ = -0.5;
-    maxX = maxY = maxZ = 0.5;
+    modelMinCoords = {-0.5, -0.5, -0.5};
+    modelMaxCoords = {0.5, 0.5, 0.5};
 }
 
 void Mesh::drawMesh() {
@@ -45,13 +45,25 @@ void Mesh::drawMesh() {
 
 void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
 
+    // representing the vertices in polar coords
+    angleOffsetBound = atan2(modelMaxCoords[2]*sfz,modelMaxCoords[0]*sfx);
+    radiusBound = sqrt((modelMaxCoords[2]*sfz) * (modelMaxCoords[2]*sfz) + (modelMaxCoords[0]*sfx) * (modelMaxCoords[0]*sfx));
 
+    //angles to each vertex in radians
+    angles = {-angleOffsetBound + (angle*2*PI/360), angleOffsetBound + (angle*2*PI/360), -angleOffsetBound + PI + (angle*2*PI/360), angleOffsetBound + PI + (angle*2*PI/360) };
 
-    min->SetX(minX * sfx + tx);
-    min->SetY(minY * sfy + ty);
-    min->SetZ(minZ * sfz + tz);
+    //x coords for all vertices after transformation
+    boundVerticesX = {radiusBound * cos(angles[0]), radiusBound * cos(angles[1]), radiusBound * cos(angles[2]), radiusBound * cos(angles[3])};
+    boundVerticesZ = {radiusBound * -sin(angles[0]), radiusBound * -sin(angles[1]), radiusBound * -sin(angles[2]), radiusBound * -sin(angles[3])};
 
-    max->SetX(maxX * sfx + tx);
-    max->SetY(maxY * sfy + ty);
-    max->SetZ(maxZ * sfz + tz);
+    sort(boundVerticesX.begin(), boundVerticesX.end());
+    sort(boundVerticesZ.begin(), boundVerticesZ.end());
+
+    min->SetX(boundVerticesX[0] + tx);
+    min->SetY(modelMinCoords[1] * sfy + ty);
+    min->SetZ(boundVerticesZ[0] + tz);
+
+    max->SetX(boundVerticesX[3] + tx);
+    max->SetY(modelMaxCoords[1] * sfy + ty);
+    max->SetZ(boundVerticesX[3] + tz);
 }

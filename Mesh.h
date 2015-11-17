@@ -9,6 +9,7 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <utility>
+#include <vector>
 #include "VECTOR3D.h"
 
 #define PI 3.141592654
@@ -30,7 +31,6 @@ protected:
 public:
 
     Mesh();
-    ~Mesh();
 
     virtual void drawMesh();
     virtual void getBBox(VECTOR3D *min, VECTOR3D *max);
@@ -39,8 +39,16 @@ public:
     float sfx, sfy, sfz;		// Scale Factors
     float angle;				// Angle around y-axis of cube coordinate system
 
-    float minX, minY, minZ;
-    float maxX, maxY, maxZ;
+    double angleOffsetBound;
+    double radiusBound;
+
+    std::vector<double> angles;
+
+    std::vector<double> boundVerticesX;
+    std::vector<double> boundVerticesZ;
+
+    std::vector<float> modelMinCoords;
+    std::vector<float> modelMaxCoords;
 
     bool selected;
 

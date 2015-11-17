@@ -13,12 +13,9 @@ TableMesh::TableMesh() {
     tableHeight = 0.2;
     tableLength = 2.0;
 
-    minX = -1.0;
-    minY = -1.1;
-    minZ = -0.5;
-    maxX = 1.0;
-    maxY = 0.1;
-    maxZ = 0.5;
+    modelMaxCoords = {1.0, 0.1, 0.5};
+    modelMinCoords = {-1.0, -1.1, -0.5};
+
     ty = 1.0;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;

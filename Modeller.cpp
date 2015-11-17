@@ -208,7 +208,7 @@ void display(void)
     // Set up the camera
     if (exploreMode){
         camPosX = exploreMesh->tx;
-        camPosY = exploreMesh->ty + exploreMesh->maxY + 2.0;
+        camPosY = exploreMesh->ty + exploreMesh->modelMaxCoords[1] + 2.0;
         camPosZ = exploreMesh->tz;
         lookAtX = exploreMesh->tx + cos(exploreMesh->angle*2*PI/360);
         lookAtY = camPosY;
@@ -507,6 +507,9 @@ void functionKeys(int key, int x, int y){
     else if (key == GLUT_KEY_F6)
     {
         if (exploreMode){
+            for ( auto it : meshList){
+                it->selected = false;
+            }
             currentAction = TRANSLATE;
             exploreMode = false;
             meshList.push_front(exploreMesh);
@@ -687,14 +690,13 @@ void functionKeys(int key, int x, int y){
 
     else if (key == GLUT_KEY_RIGHT)
     {
-        switch (currentAction)
-        {
+        switch (currentAction) {
             case TRANSLATE:
-                for( auto it : meshList){
+                for (auto it : meshList) {
                     if (it->selected == true) {
                         it->tx += 1.0;
                         it->getBBox(&min, &max);
-                        if (max.x > roomBBox.max.x){
+                        if (max.x > roomBBox.max.x) {
                             it->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
                         }
                     }
@@ -702,8 +704,8 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SCALE:
-                for( auto it : meshList){
-                    if (it->selected == true){
+                for (auto it : meshList) {
+                    if (it->selected == true) {
                         it->sfx += 1.0;
                         it->getBBox(&min, &max);
                         if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
@@ -715,10 +717,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case ROTATE:
-                for ( auto it : meshList){
-                    if (it->selected == true){
+                for (auto it : meshList) {
+                    if (it->selected == true) {
                         it->angle += 5.0;
-                        if (it->angle == 360.0){
+                        if (it->angle == 360.0) {
                             it->angle = 0.0;
                         }
                     }
@@ -732,10 +734,10 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case SELECT:
-                for ( auto it : meshList){
+                for (auto it : meshList) {
                     it->selected = false;
                 }
-                if (next(currentMesh, 1) == meshList.end()){
+                if (next(currentMesh, 1) == meshList.end()) {
                     printf("end of line");
                     currentMesh = meshList.begin();
                     (*currentMesh)->selected = true;
@@ -747,7 +749,7 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case MULTIPLESELECT:
-                if (next(currentMesh, 1) == meshList.end()){
+                if (next(currentMesh, 1) == meshList.end()) {
                     printf("end of line");
                     currentMesh = meshList.begin();
                     (*currentMesh)->selected = true;
@@ -763,6 +765,9 @@ void functionKeys(int key, int x, int y){
 
             case EXPLORE:
                 exploreMesh->angle -= 2.0;
+                if (exploreMesh->angle == -360.0) {
+                    exploreMesh->angle = 0.0;
+                }
         }
     }
 
@@ -844,28 +849,10 @@ void functionKeys(int key, int x, int y){
 
             case EXPLORE:
                 exploreMesh->angle += 2.0;
+                if (exploreMesh->angle == 360.0) {
+                    exploreMesh->angle = 0.0;
+                }
         }
     }
     glutPostRedisplay();
-}
-
-bool checkBounds(VECTOR3D *minCube, VECTOR3D *maxCube){
-
-    VECTOR3D minCheck;
-    VECTOR3D maxCheck;
-
-    minCheck.x = minCube->x - roomBBox.min.x;
-    minCheck.y = minCube->y - roomBBox.min.y;
-    minCheck.z = minCube->z - roomBBox.min.z;
-
-    maxCheck.x = roomBBox.max.x - maxCube->x;
-    maxCheck.y = roomBBox.max.y - maxCube->y;
-    maxCheck.z = roomBBox.max.z - maxCube->z;
-
-    if((minCheck.x*minCheck.y*minCheck.z) < 0.0) return false;
-
-    if((maxCheck.x*maxCheck.y*maxCheck.z) < 0.0) return false;
-
-    return true;
-
 }

@@ -6,12 +6,8 @@
 
 AutoMesh::AutoMesh() {
 
-    minX = -1.5;
-    minY = -0.75;
-    minZ = -1.05;
-    maxX = 1.5;
-    maxY = 0.9;
-    maxZ = 1.05;
+    modelMaxCoords = {1.5, 0.9, 1.05};
+    modelMinCoords = {-1.5, -0.75, -1.05};
     ty = 0.75;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;
@@ -69,7 +65,7 @@ void AutoMesh::drawMesh() {
 
     // draw wheels
     glPushMatrix();
-    glTranslatef(1.0,-0.5,0.85);
+    glTranslatef(1.0,-0.5,0.70);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
@@ -83,7 +79,7 @@ void AutoMesh::drawMesh() {
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-1.0,-0.5,0.85);
+    glTranslatef(-1.0,-0.5,0.70);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
@@ -97,7 +93,7 @@ void AutoMesh::drawMesh() {
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(1.0,-0.5,-0.85);
+    glTranslatef(1.0,-0.5,-0.70);
     glRotatef(180, 0.0, 1.0, 0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);
@@ -112,7 +108,7 @@ void AutoMesh::drawMesh() {
     glPopMatrix();
 
     glPushMatrix();
-    glTranslatef(-1.0,-0.5,-0.85);
+    glTranslatef(-1.0,-0.5,-0.70);
     glRotatef(180, 0.0, 1.0, 0.0);
     qobj = gluNewQuadric();
     gluQuadricDrawStyle(qobj,GLU_FILL);

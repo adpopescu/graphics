@@ -1,5 +1,4 @@
-#include <GL/gl.h>
-#include <GL/glut.h>
+
 #include "VECTOR3D.h"
 
 #include "QuadMesh.h"

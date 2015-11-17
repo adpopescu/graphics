@@ -21,7 +21,6 @@ private:
 
 public:
     TableMesh();
-    ~TableMesh();
 
     void drawMesh();
 

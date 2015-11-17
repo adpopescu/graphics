@@ -21,7 +21,6 @@ private:
 
 public:
     IceCreamConeMesh();
-    ~IceCreamConeMesh();
 
     void drawMesh();
 
