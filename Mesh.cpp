@@ -64,16 +64,18 @@ void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
     boundVerticesX = {radiusBound * cos(angles[0]), radiusBound * cos(angles[1]), radiusBound * cos(angles[2]), radiusBound * cos(angles[3])};
     boundVerticesZ = {radiusBound * -sin(angles[0]), radiusBound * -sin(angles[1]), radiusBound * -sin(angles[2]), radiusBound * -sin(angles[3])};
 
-    std::cout << "Bound Vertices X: " << boundVerticesX[0] << ", " << boundVerticesX[1] << ", " << boundVerticesX[2] << ", " << boundVerticesX[3] << "}" << std::endl;
-    std::cout << "Bound Vertices Z: " << boundVerticesZ[0] << ", " << boundVerticesZ[1] << ", " << boundVerticesZ[2] << ", " << boundVerticesZ[3] << "}" << std::endl;
+    std::cout << "Bound Vertices X: {" << boundVerticesX[0] << ", " << boundVerticesX[1] << ", " << boundVerticesX[2] << ", " << boundVerticesX[3] << "}" << std::endl;
+    std::cout << "Bound Vertices Z: {" << boundVerticesZ[0] << ", " << boundVerticesZ[1] << ", " << boundVerticesZ[2] << ", " << boundVerticesZ[3] << "}" << std::endl;
 
     sort(boundVerticesX.begin(), boundVerticesX.end());
     sort(boundVerticesZ.begin(), boundVerticesZ.end());
 
     std::cout << "X Bounds(Model): {" << boundVerticesX[0] << ", " << boundVerticesX[3] << "}" << std::endl;
+    std::cout << "Y Bounds(Model): {" << modelMinCoords[1] << ", " << modelMaxCoords[1] << "}" << std::endl;
     std::cout << "Z Bounds(Model): {" << boundVerticesZ[0] << ", " << boundVerticesZ[3] << "}" << std::endl;
 
     std::cout << "X Bounds(World): {" << boundVerticesX[0] +tx << ", " << boundVerticesX[3] +tx << "}" << std::endl;
+    std::cout << "Y Bounds(Model): {" << modelMinCoords[1] +ty << ", " << modelMaxCoords[1] +ty << "}" << std::endl;
     std::cout << "Z Bounds(World): {" << boundVerticesZ[0] +tz << ", " << boundVerticesZ[3] +tz << "}" << std::endl;
 
     std::cout << std::endl;

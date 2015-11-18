@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 #include "VECTOR3D.h"
 
 #define PI 3.141592654

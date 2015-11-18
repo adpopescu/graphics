@@ -16,7 +16,7 @@ TableMesh::TableMesh() {
     modelMaxCoords = {1.0, 0.1, 0.5};
     modelMinCoords = {-1.0, -1.1, -0.5};
 
-    ty = 1.0;
+    ty = 1.1;
     tx = tz = 0;
     sfx = sfy = sfz = 1.0;
     angle = 0;

@@ -568,7 +568,7 @@ void functionKeys(int key, int x, int y){
                         it->ty -= 1.0;
                         it->getBBox(&min, &max);
                         if (min.y < roomBBox.min.y) {
-                            it->ty = roomBBox.min.y + 0.5 * (max.y - min.y);
+                            it->ty = roomBBox.min.y - (it->modelMinCoords[1]);
                         }
                     }
                 }
@@ -658,7 +658,7 @@ void functionKeys(int key, int x, int y){
                         it->ty += 1.0;
                         it->getBBox(&min, &max);
                         if (max.y > roomBBox.max.y){
-                            it->ty = roomBBox.max.y - 0.5 * (max.y - min.y);
+                            it->ty = roomBBox.max.y - (it->modelMaxCoords[1]);
                         }
                     }
                 }
