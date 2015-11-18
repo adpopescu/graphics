@@ -1,6 +1,7 @@
 # graphics
 #
-# Cmake file included
+# Cmake file included, must have make installed.
+# Alternatively you can download Clion IDE from Jetbrains and import, or import into any other IDE that takes understands Cmake
 #
 # cd build/
 # cmake ../
@@ -11,8 +12,17 @@
 #
 # compiled on ubuntu 14.04 LTS
 #
+# Move camera by holding down left mouse button and moving mouse around.
+# Zoom in and out by holding right mouse button and moving mouse forward and backward.
 # Generate objects using the F1 - F4 keys.
-# 
+# Enter exploration mode with F5.
+# Exit exploration mode with F6.
+#
+# Assignment 2 Note: Everything should be implemented as specified, unless I've accidentally missed something.
+#
+#
+#----------------------------------------------------------------------------------------------------------
+# Assignment 1 Stuff
 #
 # glTranslatef( cube->tx, cube->ty, cube->tz); T[{1,0,0,tx},{0,1,0,ty},{0,0,1,tz},{0,0,0,1}] * R * S * p
 #
