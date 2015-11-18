@@ -186,8 +186,8 @@ void initOpenGL(int w, int h)
 
     // Set up the bounding box of the room
     // Change this if you change your floor/wall dimensions
-    roomBBox.min.Set(-8.0f, 0.0, -8.0);
-    roomBBox.max.Set( 8.0f, 8.0,  8.0);
+    roomBBox.min.Set(-8.0, 0.0, -8.0);
+    roomBBox.max.Set( 8.0, 8.0,  8.0);
 
     //Starting Camera Position
     radiusCam = 20.0;
@@ -223,7 +223,7 @@ void display(void)
         lookAtZ = 0.0;
     }
 
-    cout << inclinationCam << endl << azimuthCam << endl << endl;
+    //cout << inclinationCam << endl << azimuthCam << endl << endl;
 
     gluLookAt(camPosX, camPosY, camPosZ, lookAtX, lookAtY, lookAtZ, 0.0, 1.0, 0.0);
 
@@ -300,8 +300,8 @@ void mouseMotionHandler(int xMouse, int yMouse)
     }
     if (currentButton == GLUT_LEFT_BUTTON)
     {
-        cout << "prevX: " << mousePrevX << endl << "X: " << xMouse << endl;
-        cout << "prevY: " << mousePrevY << endl << "Y: " << yMouse << endl << endl;
+//        cout << "prevX: " << mousePrevX << endl << "X: " << xMouse << endl;
+//        cout << "prevY: " << mousePrevY << endl << "Y: " << yMouse << endl << endl;
         if (xMouse > mousePrevX){
             azimuthCam -= 0.01;
             if (azimuthCam >= 2*PI) {
@@ -530,7 +530,7 @@ void functionKeys(int key, int x, int y){
                     if (it->selected == true){
                         it->tz += 1.0;
                         it->getBBox(&min, &max);
-                        if (max.z > roomBBox.max.z) {
+                        if (max.z >= roomBBox.max.z) {
                             it->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
                         }
                     }
@@ -611,8 +611,12 @@ void functionKeys(int key, int x, int y){
                     if (it->selected == true){
                         it->tz -= 1.0;
                         it->getBBox(&min, &max);
-                        if (min.z < roomBBox.min.z){
+                        if (min.z <= roomBBox.min.z){
+//                            std::cout << "Tz(before collision): " << it->tz << std::endl;
                             it->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+//                            std::cout << "Tz(after collision): " << it->tz << std::endl;
+//                            std::cout << "DifferenceZ(max-min): " << (max.z - min.z) << endl;
+//                            std::cout << "Room MinZ: " << roomBBox.min.z << endl;
                         }
                     }
                 }
@@ -641,7 +645,7 @@ void functionKeys(int key, int x, int y){
                     if (it->selected == true){
                         it->sfy += 0.5;
                         it->getBBox(&min, &max);
-                        if (max.y > roomBBox.max.y){
+                        if ((max.y > roomBBox.max.y) || (min.y < roomBBox.min.y)){
                             it->sfy -= 0.5;
                         }
                     }
@@ -672,7 +676,7 @@ void functionKeys(int key, int x, int y){
             case EXPLORE:
                 exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
                 exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-
+                exploreMesh->getBBox(&min, &max);
                 if (max.z > roomBBox.max.z){
                     exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
                 }
@@ -720,9 +724,15 @@ void functionKeys(int key, int x, int y){
                 for (auto it : meshList) {
                     if (it->selected == true) {
                         it->angle += 5.0;
+                        it->getBBox(&min, &max);
+                        if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                            (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                            it->angle -= 5.0;
+                        }
                         if (it->angle == 360.0) {
                             it->angle = 0.0;
                         }
+
                     }
                 }
                 break;
@@ -738,7 +748,6 @@ void functionKeys(int key, int x, int y){
                     it->selected = false;
                 }
                 if (next(currentMesh, 1) == meshList.end()) {
-                    printf("end of line");
                     currentMesh = meshList.begin();
                     (*currentMesh)->selected = true;
                 }
@@ -750,7 +759,6 @@ void functionKeys(int key, int x, int y){
 
             case MULTIPLESELECT:
                 if (next(currentMesh, 1) == meshList.end()) {
-                    printf("end of line");
                     currentMesh = meshList.begin();
                     (*currentMesh)->selected = true;
                 }
@@ -764,7 +772,12 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXPLORE:
-                exploreMesh->angle -= 2.0;
+                exploreMesh->angle -= 5.0;
+                exploreMesh->getBBox(&min, &max);
+                if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                    (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                    exploreMesh->angle += 5.0;
+                }
                 if (exploreMesh->angle == -360.0) {
                     exploreMesh->angle = 0.0;
                 }
@@ -802,6 +815,11 @@ void functionKeys(int key, int x, int y){
                 for ( auto it : meshList){
                     if (it->selected == true){
                         it->angle -= 5.0;
+                        it->getBBox(&min, &max);
+                        if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                            (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                            it->angle += 5.0;
+                        }
                         if (it->angle == -360.0){
                             it->angle = 0.0;
                         }
@@ -820,7 +838,6 @@ void functionKeys(int key, int x, int y){
                     it->selected = false;
                 }
                 if (currentMesh == meshList.begin()){
-                    printf("end of line");
                     currentMesh = meshList.end();
                     --currentMesh;
                     (*currentMesh)->selected = true;
@@ -833,7 +850,6 @@ void functionKeys(int key, int x, int y){
 
             case MULTIPLESELECT:
                 if (currentMesh == meshList.begin()){
-                    printf("end of line");
                     currentMesh = meshList.end();
                     --currentMesh;
                     (*currentMesh)->selected = true;
@@ -848,7 +864,12 @@ void functionKeys(int key, int x, int y){
                 break;
 
             case EXPLORE:
-                exploreMesh->angle += 2.0;
+                exploreMesh->angle += 5.0;
+                exploreMesh->getBBox(&min, &max);
+                if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+                    (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+                    exploreMesh->angle -= 5.0;
+                }
                 if (exploreMesh->angle == 360.0) {
                     exploreMesh->angle = 0.0;
                 }

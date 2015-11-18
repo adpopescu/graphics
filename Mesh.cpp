@@ -47,17 +47,36 @@ void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
 
     // representing the vertices in polar coords
     angleOffsetBound = atan2(modelMaxCoords[2]*sfz,modelMaxCoords[0]*sfx);
+
+    std::cout << std::endl;
+    std::cout << "Angle Offset: " << angleOffsetBound << std::endl;
+
     radiusBound = sqrt((modelMaxCoords[2]*sfz) * (modelMaxCoords[2]*sfz) + (modelMaxCoords[0]*sfx) * (modelMaxCoords[0]*sfx));
+
+    std::cout << "Radius: " << radiusBound << std::endl;
 
     //angles to each vertex in radians
     angles = {-angleOffsetBound + (angle*2*PI/360), angleOffsetBound + (angle*2*PI/360), -angleOffsetBound + PI + (angle*2*PI/360), angleOffsetBound + PI + (angle*2*PI/360) };
+
+    std::cout << "Angles: {" << angles[0] << ", " << angles[1] << ", " << angles[2] << ", " << angles[3] << "}" << std::endl;
 
     //x coords for all vertices after transformation
     boundVerticesX = {radiusBound * cos(angles[0]), radiusBound * cos(angles[1]), radiusBound * cos(angles[2]), radiusBound * cos(angles[3])};
     boundVerticesZ = {radiusBound * -sin(angles[0]), radiusBound * -sin(angles[1]), radiusBound * -sin(angles[2]), radiusBound * -sin(angles[3])};
 
+    std::cout << "Bound Vertices X: " << boundVerticesX[0] << ", " << boundVerticesX[1] << ", " << boundVerticesX[2] << ", " << boundVerticesX[3] << "}" << std::endl;
+    std::cout << "Bound Vertices Z: " << boundVerticesZ[0] << ", " << boundVerticesZ[1] << ", " << boundVerticesZ[2] << ", " << boundVerticesZ[3] << "}" << std::endl;
+
     sort(boundVerticesX.begin(), boundVerticesX.end());
     sort(boundVerticesZ.begin(), boundVerticesZ.end());
+
+    std::cout << "X Bounds(Model): {" << boundVerticesX[0] << ", " << boundVerticesX[3] << "}" << std::endl;
+    std::cout << "Z Bounds(Model): {" << boundVerticesZ[0] << ", " << boundVerticesZ[3] << "}" << std::endl;
+
+    std::cout << "X Bounds(World): {" << boundVerticesX[0] +tx << ", " << boundVerticesX[3] +tx << "}" << std::endl;
+    std::cout << "Z Bounds(World): {" << boundVerticesZ[0] +tz << ", " << boundVerticesZ[3] +tz << "}" << std::endl;
+
+    std::cout << std::endl;
 
     min->SetX(boundVerticesX[0] + tx);
     min->SetY(modelMinCoords[1] * sfy + ty);
@@ -65,5 +84,5 @@ void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
 
     max->SetX(boundVerticesX[3] + tx);
     max->SetY(modelMaxCoords[1] * sfy + ty);
-    max->SetZ(boundVerticesX[3] + tz);
+    max->SetZ(boundVerticesZ[3] + tz);
 }

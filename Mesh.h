@@ -10,6 +10,7 @@
 #include <GL/glut.h>
 #include <utility>
 #include <vector>
+#include <iostream>
 #include "VECTOR3D.h"
 
 #define PI 3.141592654
