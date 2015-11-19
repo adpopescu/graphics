@@ -423,6 +423,9 @@ void keyboard(unsigned char key, int x, int y)
         case 'c':
             currentAction = SELECT;
             break;
+        case 'x':
+            currentAction = EXPLORE;
+            break;
         case '+':
             currentAction = MULTIPLESELECT;
             break;
