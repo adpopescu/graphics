@@ -13,7 +13,7 @@
 #include <iostream>
 #include "VECTOR3D.h"
 #include "QuadMesh.h"
-#include "AutoMesh.h"
+#include "RobotMesh.h"
 #include "Mesh.h"
 #include "TableMesh.h"
 #include "IceCreamConeMesh.h"

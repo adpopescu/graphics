@@ -2,7 +2,7 @@
 // Created by dapopesc on 16/11/15.
 //
 
-#include "AutoMesh.h"
+#include "RobotMesh.h"
 
 AutoMesh::AutoMesh() {
 

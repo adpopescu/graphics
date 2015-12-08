@@ -11,7 +11,7 @@ set(SOURCE_FILES
         Robots.cpp
         QuadMesh.cpp
         QuadMesh.h
-        VECTOR3D.h AutoMesh.cpp AutoMesh.h Mesh.cpp Mesh.h TableMesh.cpp TableMesh.h IceCreamConeMesh.cpp IceCreamConeMesh.h)
+        VECTOR3D.h RobotMesh.cpp RobotMesh.h Mesh.cpp Mesh.h)
 
 add_executable(graphics ${SOURCE_FILES})
 
