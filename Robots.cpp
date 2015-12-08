@@ -15,8 +15,6 @@
 #include "QuadMesh.h"
 #include "RobotMesh.h"
 #include "Mesh.h"
-#include "TableMesh.h"
-#include "IceCreamConeMesh.h"
 
 void initOpenGL(int w, int h);
 void display(void);
