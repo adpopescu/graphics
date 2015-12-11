@@ -1,69 +1,69 @@
 #include "VECTOR3D.h"
+#include <GL/gl.h>
+#include <GL/glut.h>
 #include <utility>
-
 
 struct MeshVertex
 {
-	VECTOR3D	position;
-	VECTOR3D    normal;
+    VECTOR3D	position;
+    VECTOR3D    normal;
 };
-
 
 
 struct MeshQuad
 {
-	// pointers to vertices of each quad
-	MeshVertex *vertices[4];	
+    // pointers to vertices of each quad
+    MeshVertex *vertices[4];
 };
 
 class QuadMesh
 {
 private:
-	
-	int maxMeshSize;
-	int minMeshSize;
-	float meshDim;
 
-	int numVertices;
-	MeshVertex *vertices;
+    int maxMeshSize;
+    int minMeshSize;
+    float meshDim;
 
-	int numQuads;
-	MeshQuad *quads;
+    int numVertices;
+    MeshVertex *vertices;
 
-	int numFacesDrawn;
-	
-	GLfloat mat_ambient[4];
+    int numQuads;
+    MeshQuad *quads;
+
+    int numFacesDrawn;
+
+    GLfloat mat_ambient[4];
     GLfloat mat_specular[4];
     GLfloat mat_diffuse[4];
-	GLfloat mat_shininess[1];
+    GLfloat mat_shininess[1];
 
-	
+
 private:
-	bool CreateMemory();
-	void FreeMemory();
+    bool CreateMemory();
+    void FreeMemory();
 
 public:
 
-	typedef std::pair<int, int> MaxMeshDim;
+    typedef std::pair<int, int> MaxMeshDim;
 
-	QuadMesh(int maxMeshSize = 40, float meshDim = 1.0f);
-	
-	~QuadMesh()
-	{
-		FreeMemory();
-	}
+    QuadMesh(int maxMeshSize = 40, float meshDim = 1.0f);
 
-	MaxMeshDim GetMaxMeshDimentions()
-	{
-		return MaxMeshDim(minMeshSize, maxMeshSize);
-	}
-	
-	bool InitMesh(int meshSize, VECTOR3D origin, double meshLength, double meshWidth,VECTOR3D dir1, VECTOR3D dir2);
-	void DrawMesh(int meshSize);
-	void UpdateMesh();
-	void SetMaterial(VECTOR3D ambient, VECTOR3D diffuse, VECTOR3D specular, double shininess);
-	void ComputeNormals();
-	
-	
+    ~QuadMesh()
+    {
+        FreeMemory();
+    }
+
+    MaxMeshDim GetMaxMeshDimentions()
+    {
+        return MaxMeshDim(minMeshSize, maxMeshSize);
+    }
+
+    bool InitMesh(int meshSize, VECTOR3D origin, double meshLength, double meshWidth,VECTOR3D dir1, VECTOR3D dir2);
+    void DrawMesh(int meshSize);
+    void UpdateMesh();
+    void SetMaterial(VECTOR3D ambient, VECTOR3D diffuse, VECTOR3D specular, double shininess);
+    void ComputeNormals();
+
+
 };
 
