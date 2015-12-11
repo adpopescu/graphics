@@ -7,7 +7,7 @@
 
 #include "Mesh.h"
 
-class AutoMesh : public Mesh {
+class RobotMesh : public Mesh {
 
 private:
 
@@ -21,20 +21,16 @@ private:
 
 public:
 
-    AutoMesh();
+    RobotMesh();
 
     void drawMesh();
 
-    float bodyWidth;
-    float bodyLength;
-    float bodyHeight;
+    float lowerBodyRadius;
 
-    float cockpitWidth;
-    float cockpitLength;
-    float cockpitHeight;
+    float upperBodyRadius;
+    float upperBodyHeight;
 
-    float wheelRadius;
-    float wheelHeight;
+    float headRadius;
 
 };
 

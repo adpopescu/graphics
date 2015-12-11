@@ -56,6 +56,7 @@ QuadMesh *rightMesh = NULL;
 QuadMesh *leftMesh = NULL;
 QuadMesh *backMesh = NULL;
 QuadMesh *frontMesh = NULL;
+QuadMesh *ceilingMesh = NULL;
 
 //camera variables
 GLdouble radiusCam, azimuthCam, inclinationCam;
@@ -82,7 +83,7 @@ int main(int argc, char **argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1280, 720);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("Scene Modeller");
+    glutCreateWindow("Robots Game");
 
     initOpenGL(1280,720);
 
@@ -180,6 +181,7 @@ void initOpenGL(int w, int h)
     backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
     backMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
+    //front wall
     origin = VECTOR3D(-8.0f, 0.0f, 8.0f);
     dir1v = VECTOR3D(0.0f, 1.0f, 0.0f);
     dir2v = VECTOR3D(1.0f, 0.0f, 0.0f);
@@ -187,7 +189,15 @@ void initOpenGL(int w, int h)
     frontMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
     frontMesh->SetMaterial(ambient, diffuse, specular, shininess);
 
-    exploreMesh = new AutoMesh;
+    //ceiling
+    origin = VECTOR3D(8.0f, 8.0f, -8.0f);
+    dir1v = VECTOR3D(-1.0f, 0.0f, 0.0f);
+    dir2v = VECTOR3D(0.0f, 0.0f, 1.0f);
+    ceilingMesh = new QuadMesh(meshSize, 16.0);
+    ceilingMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
+    ceilingMesh->SetMaterial(ambient, diffuse, specular, shininess);
+
+    exploreMesh = new RobotMesh;
 
     // Set up the bounding box of the room
     // Change this if you change your floor/wall dimensions
@@ -196,8 +206,8 @@ void initOpenGL(int w, int h)
 
     //Starting Camera Position
     radiusCam = 20.0;
-    inclinationCam = -PI/2.0;
-    azimuthCam = PI;
+    inclinationCam = 0.0;
+//    azimuthCam = PI;
 }
 
 void display(void)
@@ -210,9 +220,9 @@ void display(void)
     camPosX = exploreMesh->tx;
     camPosY = exploreMesh->ty + exploreMesh->modelMaxCoords[1] + 2.0;
     camPosZ = exploreMesh->tz;
-    lookAtX = exploreMesh->tx + cos(exploreMesh->angle*2*PI/360);
-    lookAtY = camPosY;
-    lookAtZ = exploreMesh->tz + -sin(exploreMesh->angle*2*PI/360);
+    lookAtX = exploreMesh->tx + radiusCam * cos(exploreMesh->angle*2*PI/360);
+    lookAtY = camPosY + inclinationCam;
+    lookAtZ = exploreMesh->tz + radiusCam * -sin(exploreMesh->angle*2*PI/360);
 
 
     //cout << inclinationCam << endl << azimuthCam << endl << endl;
@@ -239,6 +249,7 @@ void display(void)
     leftMesh->DrawMesh(meshSize);
     backMesh->DrawMesh(meshSize);
     frontMesh->DrawMesh(meshSize);
+    ceilingMesh->DrawMesh(meshSize);
 
     glutSwapBuffers();
 }
@@ -322,17 +333,17 @@ void mouseMotionHandler(int xMouse, int yMouse)
             }
         }
 
-        if (yMouse > mousePrevY){
-            inclinationCam += 0.01;
-            if (inclinationCam >= -0.01) {
-                inclinationCam = -0.01;
+        if (yMouse < mousePrevY){
+            inclinationCam += 0.1;
+            if (inclinationCam >= 20) {
+                inclinationCam = 20;
             }
         }
 
-        else if (yMouse < mousePrevY){
-            inclinationCam -= 0.01;
-            if (inclinationCam <= -PI/2) {
-                inclinationCam = -PI/2;
+        else if (yMouse > mousePrevY){
+            inclinationCam -= 0.1;
+            if (inclinationCam <= -20) {
+                inclinationCam = -20;
             }
         }
     }
