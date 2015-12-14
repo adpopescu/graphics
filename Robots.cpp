@@ -2,9 +2,9 @@
 	       Scene Modelling Program
 ********************************************************************/
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+#include <openGL/gl.h>
+#include <openGL/glu.h>
+#include <GLUT/glut.h>
 #include <stdio.h>
 #include <utility>
 #include <vector>
