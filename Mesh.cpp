@@ -11,6 +11,7 @@ Mesh::Mesh() {
     angle = 0;
     modelMinCoords = {-0.5, -0.5, -0.5};
     modelMaxCoords = {0.5, 0.5, 0.5};
+    selected = false;
 }
 
 void Mesh::drawMesh() {

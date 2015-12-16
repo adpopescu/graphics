@@ -74,7 +74,7 @@ typedef struct BoundingBox
 BBox roomBBox;
 
 // Default Mesh Size
-int meshSize = 16;
+int meshSize = 160;
 
 int main(int argc, char **argv)
 {
@@ -199,6 +199,7 @@ void initOpenGL(int w, int h)
 
     exploreMesh = new RobotMesh;
 
+
     // Set up the bounding box of the room
     // Change this if you change your floor/wall dimensions
     roomBBox.min.Set(-8.0, 0.0, -8.0);
@@ -206,7 +207,7 @@ void initOpenGL(int w, int h)
 
     //Starting Camera Position
     radiusCam = 20.0;
-    inclinationCam = 0.0;
+    inclinationCam = -3.0;
 //    azimuthCam = PI;
 }
 
@@ -218,7 +219,7 @@ void display(void)
 
     // Set up the camera
     camPosX = exploreMesh->tx;
-    camPosY = exploreMesh->ty + exploreMesh->modelMaxCoords[1] + 2.0;
+    camPosY = exploreMesh->ty + exploreMesh->modelMaxCoords[1]+0.5;
     camPosZ = exploreMesh->tz;
     lookAtX = exploreMesh->tx + radiusCam * cos(exploreMesh->angle*2*PI/360);
     lookAtY = camPosY + inclinationCam;
@@ -333,19 +334,19 @@ void mouseMotionHandler(int xMouse, int yMouse)
             }
         }
 
-        if (yMouse < mousePrevY){
-            inclinationCam += 0.1;
-            if (inclinationCam >= 20) {
-                inclinationCam = 20;
-            }
-        }
-
-        else if (yMouse > mousePrevY){
-            inclinationCam -= 0.1;
-            if (inclinationCam <= -20) {
-                inclinationCam = -20;
-            }
-        }
+//        if (yMouse < mousePrevY){
+//            inclinationCam += 0.1;
+//            if (inclinationCam >= 20) {
+//                inclinationCam = 20;
+//            }
+//        }
+//
+//        else if (yMouse > mousePrevY){
+//            inclinationCam -= 0.1;
+//            if (inclinationCam <= -20) {
+//                inclinationCam = -20;
+//            }
+//        }
     }
 
     mousePrevX = xMouse;
@@ -460,6 +461,12 @@ void functionKeys(int key, int x, int y){
     VECTOR3D min, max;
         // Do transformation code with arrow keys
         // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
+    if (key == GLUT_KEY_F1)
+    {
+        RobotMesh* newMesh = new RobotMesh;
+        meshList.push_front(newMesh);
+    }
+
     if (key == GLUT_KEY_DOWN)
     {
         exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);

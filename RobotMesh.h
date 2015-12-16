@@ -27,10 +27,14 @@ public:
 
     float lowerBodyRadius;
 
-    float upperBodyRadius;
+    float upperBodyRadiusLower;
+    float upperBodyRadiusUpper;
     float upperBodyHeight;
 
     float headRadius;
+
+    float launcherRadius;
+    float launcherLength;
 
 };
 
