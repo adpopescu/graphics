@@ -34,7 +34,7 @@ public:
 
     Mesh();
 
-    virtual void drawMesh();
+    virtual void drawMesh(GLuint* textures);
     virtual void getBBox(VECTOR3D *min, VECTOR3D *max);
 
     float tx, ty, tz;			// Translation Deltas

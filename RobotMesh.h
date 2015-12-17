@@ -18,12 +18,11 @@ private:
 
     GLUquadricObj *qobj;
 
-
 public:
 
     RobotMesh();
 
-    void drawMesh();
+    void drawMesh(GLuint* textures);
 
     float lowerBodyRadius;
 

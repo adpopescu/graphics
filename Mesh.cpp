@@ -14,22 +14,22 @@ Mesh::Mesh() {
     selected = false;
 }
 
-void Mesh::drawMesh() {
-    if (selected)
-    {
-        // Setup the material and lights used for the cube
-        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
-        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
-    }
-    else
-    {
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
-    }
+void Mesh::drawMesh(GLuint* textures) {
+//    if (selected)
+//    {
+//        // Setup the material and lights used for the cube
+//        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
+//        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
+//        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
+//        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
+//    }
+//    else
+//    {
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
+//    }
 
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);

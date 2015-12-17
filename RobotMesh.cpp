@@ -23,24 +23,25 @@ RobotMesh::RobotMesh() {
 
     launcherRadius = 0.11;
     launcherLength = 1.0;
+
 }
 
-void RobotMesh::drawMesh() {
+void RobotMesh::drawMesh(GLuint* textures) {
 
-    if (selected)
-    {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
-        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
-    }
-    else
-    {
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
-    }
+//    if (selected)
+//    {
+//        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
+//        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
+//        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
+//        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
+//    }
+//    else
+//    {
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
+//    }
 
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -48,11 +49,13 @@ void RobotMesh::drawMesh() {
     glRotatef(angle, 0.0, 1.0, 0.0);
     glScalef(sfx, sfy, sfz);
 
-
     // draw lower body
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[3]);
     qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
     gluQuadricDrawStyle(qobj,GLU_FILL);
+    glPolygonMode(GL_FRONT, GL_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
     gluSphere(qobj,lowerBodyRadius,32,10);
     gluDeleteQuadric(qobj);
@@ -60,8 +63,10 @@ void RobotMesh::drawMesh() {
 
     // draw head
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[5]);
     glTranslatef(0.0, headRadius+lowerBodyRadius+upperBodyHeight*0.9, 0.0);
     qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
     gluSphere(qobj,headRadius,32,10);
@@ -70,9 +75,11 @@ void RobotMesh::drawMesh() {
 
     // draw upper body
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[4]);
     glTranslatef(0.0, 0.9, 0.0);
     glRotatef(-90.0, 1.0, 0.0, 0.0);
     qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
     gluCylinder(qobj, upperBodyRadiusLower, upperBodyRadiusUpper, upperBodyHeight, 32, 10);
@@ -87,12 +94,15 @@ void RobotMesh::drawMesh() {
 
     //draw weapon
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[5]);
     glTranslatef(0.0, 2.75, 0.0);
     glRotatef(90.0, 0.0, 1.0, 0.0);
     qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
     gluQuadricDrawStyle(qobj,GLU_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
     gluCylinder(qobj, launcherRadius, launcherRadius, launcherLength, 32, 10);
+    gluQuadricTexture(qobj, GL_FALSE);
     //draw the first cap
     gluDisk(qobj, 0.0, launcherRadius, 32, 1);
     glTranslatef(0, 0, launcherLength);
@@ -104,5 +114,4 @@ void RobotMesh::drawMesh() {
 
 
     glPopMatrix();
-
 }

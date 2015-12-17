@@ -15,6 +15,7 @@
 #include "QuadMesh.h"
 #include "RobotMesh.h"
 #include "Mesh.h"
+#include <SOIL/SOIL.h>
 
 void initOpenGL(int w, int h);
 void display(void);
@@ -58,6 +59,9 @@ QuadMesh *backMesh = NULL;
 QuadMesh *frontMesh = NULL;
 QuadMesh *ceilingMesh = NULL;
 
+static const int numTextures = 6;
+GLuint texture[numTextures];
+
 //camera variables
 GLdouble radiusCam, azimuthCam, inclinationCam;
 GLdouble camPosX, camPosY, camPosZ;
@@ -74,7 +78,7 @@ typedef struct BoundingBox
 BBox roomBBox;
 
 // Default Mesh Size
-int meshSize = 160;
+int meshSize = 8;
 
 int main(int argc, char **argv)
 {
@@ -98,19 +102,159 @@ int main(int argc, char **argv)
     return 0;
 }
 
+void makeTextures() {
 
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+
+    glGenTextures(numTextures, texture);
+    cout << glGetError() << endl;
+
+    unsigned char* image = SOIL_load_image("textures/palace_floor.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+//    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+
+    image = SOIL_load_image("textures/metallic_wall.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+//    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+    image = SOIL_load_image("textures/spaceship_ceiling.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[2]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+//    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+    image = SOIL_load_image("textures/tire.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[3]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+//    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+    image = SOIL_load_image("textures/battered_robot.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[4]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+    image = SOIL_load_image("textures/blue_rusted_metal.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
+    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    cout << glGetError() << endl;
+    glBindTexture(GL_TEXTURE_2D, texture[5]);
+    cout << glGetError() << endl;
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    cout << glGetError() << endl;
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    cout << glGetError() << endl;
+//    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    cout << "Load image into 2D texture: " << glGetError() << endl;
+    cout << "texture: " << texture << endl;
+
+}
 
 // Setup openGL */
 void initOpenGL(int w, int h)
 {
     // Set up viewport, projection, then change to modelview matrix mode -
     // display function will then set up camera and modeling transforms
+
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(60.0,1.0,0.2,80.0);
     glMatrixMode(GL_MODELVIEW);
+    glClearColor(0.6, 0.6, 0.6, 0.0);
+    glClearDepth(1.0f);
     glLoadIdentity();
+
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT , GL_NICEST);
 
     // Set up and enable lighting
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -129,15 +273,14 @@ void initOpenGL(int w, int h)
 
     // Other OpenGL setup
     glEnable(GL_DEPTH_TEST);
-    glShadeModel(GL_SMOOTH);
-    glClearColor(0.6, 0.6, 0.6, 0.0);
-    glClearDepth(1.0f);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    cout << "Enable 2D Textures: " << glGetError() << endl;
+
+
     // This one is important - renormalize normal vectors
     glEnable(GL_NORMALIZE);
 
-    //Nice perspective.
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT , GL_NICEST);
+    makeTextures();
 
     // Set up meshes
     VECTOR3D origin  = VECTOR3D(-8.0f,0.0f,8.0f);
@@ -225,9 +368,7 @@ void display(void)
     lookAtY = camPosY + inclinationCam;
     lookAtZ = exploreMesh->tz + radiusCam * -sin(exploreMesh->angle*2*PI/360);
 
-
     //cout << inclinationCam << endl << azimuthCam << endl << endl;
-
     gluLookAt(camPosX, camPosY, camPosZ, lookAtX, lookAtY, lookAtZ, 0.0, 1.0, 0.0);
 
     glMatrixMode(GL_PROJECTION);
@@ -237,19 +378,22 @@ void display(void)
 
     // Draw all objects
     for (auto it : meshList){
-        it->drawMesh();
+        it->drawMesh(texture);
     }
     //draw explore mesh
     if (exploreMesh){
-        exploreMesh->drawMesh();
+        exploreMesh->drawMesh(texture);
     }
 
     // Draw floor and wall meshes
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
     floorMesh->DrawMesh(meshSize);
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
     rightMesh->DrawMesh(meshSize);
     leftMesh->DrawMesh(meshSize);
     backMesh->DrawMesh(meshSize);
     frontMesh->DrawMesh(meshSize);
+    glBindTexture(GL_TEXTURE_2D, texture[2]);
     ceilingMesh->DrawMesh(meshSize);
 
     glutSwapBuffers();
@@ -313,10 +457,10 @@ void mouseMotionHandler(int xMouse, int yMouse)
         if (xMouse > mousePrevX) {
             exploreMesh->angle -= 0.5;
             exploreMesh->getBBox(&min, &max);
-            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
-                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
-                exploreMesh->angle += 0.5;
-            }
+//            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+//                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+//                exploreMesh->angle += 0.5;
+//            }
             if (exploreMesh->angle == -360.0) {
                 exploreMesh->angle = 0.0;
             }
@@ -325,28 +469,28 @@ void mouseMotionHandler(int xMouse, int yMouse)
         else if (xMouse < mousePrevX) {
             exploreMesh->angle += 0.5;
             exploreMesh->getBBox(&min, &max);
-            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
-                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
-                exploreMesh->angle -= 0.5;
-            }
+//            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
+//                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
+//                exploreMesh->angle -= 0.5;
+//            }
             if (exploreMesh->angle == 360.0) {
                 exploreMesh->angle = 0.0;
             }
         }
 
-//        if (yMouse < mousePrevY){
-//            inclinationCam += 0.1;
-//            if (inclinationCam >= 20) {
-//                inclinationCam = 20;
-//            }
-//        }
-//
-//        else if (yMouse > mousePrevY){
-//            inclinationCam -= 0.1;
-//            if (inclinationCam <= -20) {
-//                inclinationCam = -20;
-//            }
-//        }
+        if (yMouse < mousePrevY){
+            inclinationCam += 0.1;
+            if (inclinationCam >= 20) {
+                inclinationCam = 20;
+            }
+        }
+
+        else if (yMouse > mousePrevY){
+            inclinationCam -= 0.1;
+            if (inclinationCam <= -20) {
+                inclinationCam = -20;
+            }
+        }
     }
 
     mousePrevX = xMouse;
@@ -385,69 +529,75 @@ void keyboard(unsigned char key, int x, int y)
             exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
             exploreMesh->getBBox(&min, &max);
-            if (max.z > roomBBox.max.z){
-                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-            }
-            else if (min.z < roomBBox.min.z) {
-                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-            }
-            if (max.x > roomBBox.max.x) {
-                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-            }
-            else if (min.x < roomBBox.min.x) {
-                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-            }
+//            if (max.z > roomBBox.max.z){
+//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+//            }
+//            else if (min.z < roomBBox.min.z) {
+//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+//            }
+//            if (max.x > roomBBox.max.x) {
+//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+//            }
+//            else if (min.x < roomBBox.min.x) {
+//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+//            }
             break;
         case 's':
             exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->tz += exploreSpeed * sin(exploreMesh->angle*2*PI/360);
             exploreMesh->getBBox(&min, &max);
-            if (max.z > roomBBox.max.z){
-                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-            }
-            else if (min.z < roomBBox.min.z) {
-                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-            }
-            if (max.x > roomBBox.max.x) {
-                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-            }
-            else if (min.x < roomBBox.min.x) {
-                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-            }
+//            if (max.z > roomBBox.max.z){
+//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+//            }
+//            else if (min.z < roomBBox.min.z) {
+//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+//            }
+//            if (max.x > roomBBox.max.x) {
+//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+//            }
+//            else if (min.x < roomBBox.min.x) {
+//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+//            }
             break;
         case 'a':
             exploreMesh->tx += exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
             exploreMesh->tz -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->getBBox(&min, &max);
-            if (max.z > roomBBox.max.z){
-                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-            }
-            else if (min.z < roomBBox.min.z) {
-                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-            }
-            if (max.x > roomBBox.max.x) {
-                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-            }
-            else if (min.x < roomBBox.min.x) {
-                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-            }
+//            if (max.z > roomBBox.max.z){
+//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+//            }
+//            else if (min.z < roomBBox.min.z) {
+//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+//            }
+//            if (max.x > roomBBox.max.x) {
+//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+//            }
+//            else if (min.x < roomBBox.min.x) {
+//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+//            }
             break;
         case 'd':
             exploreMesh->tx -= exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
             exploreMesh->tz += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->getBBox(&min, &max);
-            if (max.z > roomBBox.max.z){
-                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-            }
-            else if (min.z < roomBBox.min.z) {
-                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-            }
-            if (max.x > roomBBox.max.x) {
-                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-            }
-            else if (min.x < roomBBox.min.x) {
-                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-            }
+//            if (max.z > roomBBox.max.z){
+//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
+//            }
+//            else if (min.z < roomBBox.min.z) {
+//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
+//            }
+//            if (max.x > roomBBox.max.x) {
+//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
+//            }
+//            else if (min.x < roomBBox.min.x) {
+//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
+//            }
+            break;
+        case 'z':
+            exploreMesh->ty -= exploreSpeed;
+            break;
+        case 'x':
+            exploreMesh->ty += exploreSpeed;
             break;
         case 'q':
             exit(0);

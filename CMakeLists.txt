@@ -4,6 +4,7 @@ project(graphics)
 find_package(OpenGL)
 find_package(GLUT)
 find_package(GLU)
+find_package(SOIL)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -20,4 +21,5 @@ target_link_libraries(
         ${OPENGL_gl_LIBRARY}
         ${GLU_LIBRARY}
         ${GLUT_LIBRARY}
+        ${SOIL_LIBRARY}
 )
