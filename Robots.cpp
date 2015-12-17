@@ -11,10 +11,8 @@
 #include <list>
 #include <iterator>
 #include <iostream>
-#include "VECTOR3D.h"
-#include "QuadMesh.h"
 #include "RobotMesh.h"
-#include "Mesh.h"
+#include "Level.h"
 #include <SOIL/SOIL.h>
 
 void initOpenGL(int w, int h);
@@ -51,13 +49,7 @@ bool exploreMode = false;
 Mesh* exploreMesh = NULL;
 GLdouble exploreSpeed = 0.5;
 
-QuadMesh *floorMesh = NULL;
-// Wall Mesh variables here
-QuadMesh *rightMesh = NULL;
-QuadMesh *leftMesh = NULL;
-QuadMesh *backMesh = NULL;
-QuadMesh *frontMesh = NULL;
-QuadMesh *ceilingMesh = NULL;
+Level* level = NULL;
 
 static const int numTextures = 6;
 GLuint texture[numTextures];
@@ -78,7 +70,6 @@ typedef struct BoundingBox
 BBox roomBBox;
 
 // Default Mesh Size
-int meshSize = 8;
 
 int main(int argc, char **argv)
 {
@@ -279,67 +270,15 @@ void initOpenGL(int w, int h)
 
     // This one is important - renormalize normal vectors
     glEnable(GL_NORMALIZE);
-
     makeTextures();
 
     // Set up meshes
-    VECTOR3D origin  = VECTOR3D(-8.0f,0.0f,8.0f);
-    VECTOR3D dir1v   = VECTOR3D(1.0f, 0.0f, 0.0f);
-    VECTOR3D dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-    floorMesh = new QuadMesh(meshSize, 16.0);
-    floorMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
-
-    VECTOR3D ambient = VECTOR3D(0.0f,0.0f,0.0f);
-    VECTOR3D specular= VECTOR3D(0.0f,0.0f,0.0f);
-    VECTOR3D diffuse= VECTOR3D(0.9f,0.5f,0.0f);
-    float shininess = 0.0;
-    floorMesh->SetMaterial(ambient,diffuse,specular,shininess);
 
     // Set up wall meshes
     // Make sure direction vectors are such that the normals are pointing into the room
     // Use the right-hand-rule (cross product)
     // If you are confused about this, ask in class
-
-    //right wall
-    origin  = VECTOR3D(8.0f,0.0f,8.0f);
-    dir1v   = VECTOR3D(0.0f, 1.0f, 0.0f);
-    dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-    rightMesh = new QuadMesh(meshSize, 16.0);
-    rightMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
-    rightMesh->SetMaterial(ambient,diffuse,specular,shininess);
-
-    //left wall
-    origin  = VECTOR3D(-8.0f,8.0f,8.0f);
-    dir1v   = VECTOR3D(0.0f, -1.0f, 0.0f);
-    dir2v   = VECTOR3D(0.0f, 0.0f,-1.0f);
-    leftMesh = new QuadMesh(meshSize, 16.0);
-    leftMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
-    leftMesh->SetMaterial(ambient,diffuse,specular,shininess);
-
-    //back wall
-    origin  = VECTOR3D(8.0f, 8.0f, -8.0f);
-    dir1v   = VECTOR3D(-1.0f, 0.0f, 0.0f);
-    dir2v   = VECTOR3D(0.0f, -1.0f, 0.0f);
-    backMesh = new QuadMesh(meshSize, 16.0);
-    backMesh->InitMesh(meshSize, origin, 16.0, 8.0, dir1v, dir2v);
-    backMesh->SetMaterial(ambient,diffuse,specular,shininess);
-
-    //front wall
-    origin = VECTOR3D(-8.0f, 0.0f, 8.0f);
-    dir1v = VECTOR3D(0.0f, 1.0f, 0.0f);
-    dir2v = VECTOR3D(1.0f, 0.0f, 0.0f);
-    frontMesh = new QuadMesh(meshSize, 16.0);
-    frontMesh->InitMesh(meshSize, origin, 8.0, 16.0, dir1v, dir2v);
-    frontMesh->SetMaterial(ambient, diffuse, specular, shininess);
-
-    //ceiling
-    origin = VECTOR3D(8.0f, 8.0f, -8.0f);
-    dir1v = VECTOR3D(-1.0f, 0.0f, 0.0f);
-    dir2v = VECTOR3D(0.0f, 0.0f, 1.0f);
-    ceilingMesh = new QuadMesh(meshSize, 16.0);
-    ceilingMesh->InitMesh(meshSize, origin, 16.0, 16.0, dir1v, dir2v);
-    ceilingMesh->SetMaterial(ambient, diffuse, specular, shininess);
-
+    level = new Level;
     exploreMesh = new RobotMesh;
 
 
@@ -386,16 +325,7 @@ void display(void)
     }
 
     // Draw floor and wall meshes
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
-    floorMesh->DrawMesh(meshSize);
-    glBindTexture(GL_TEXTURE_2D, texture[1]);
-    rightMesh->DrawMesh(meshSize);
-    leftMesh->DrawMesh(meshSize);
-    backMesh->DrawMesh(meshSize);
-    frontMesh->DrawMesh(meshSize);
-    glBindTexture(GL_TEXTURE_2D, texture[2]);
-    ceilingMesh->DrawMesh(meshSize);
-
+    level->drawLevel(texture);
     glutSwapBuffers();
 }
 
