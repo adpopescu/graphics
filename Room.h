@@ -18,6 +18,7 @@ public:
     Room(VECTOR3D location, float size, int door[4]);
     void initRoom();
     void drawRoom(GLuint *textures);
+    void getBBox(VECTOR3D* min, VECTOR3D* max);
 
 
     // Origin of the room

@@ -9,7 +9,7 @@ find_package(SOIL)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES
-        Robots.cpp
+        Robot_game.cpp
         QuadMesh.cpp
         QuadMesh.h
         VECTOR3D.h RobotMesh.cpp RobotMesh.h Mesh.cpp Mesh.h Level.cpp Level.h Room.cpp Room.h)

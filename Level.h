@@ -16,8 +16,9 @@ class Level {
 public:
     Level();
     void initLevel();
-    void drawLevel(GLuint* textures);
-    void getRoomBBox(VECTOR3D* min, VECTOR3D* max);
+    void drawLevel(GLuint *textures);
+    void getRoomBBox(VECTOR3D *min, VECTOR3D *max, VECTOR3D playerPos);
+    bool insideRoom(Room *room, VECTOR3D *playerPos);
 
 private:
     forward_list<Room*> rooms;

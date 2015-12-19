@@ -157,3 +157,15 @@ void Room::drawRoom(GLuint *textures) {
     }
 
 }
+
+void Room::getBBox(VECTOR3D *min, VECTOR3D *max) {
+
+    min->SetX(-(roomSize/2.0)+roomLocation.x);
+    min->SetY(roomLocation.y);
+    min->SetZ(-(roomSize/2.0) + roomLocation.z);
+
+    max->SetX((roomSize/2.0) + roomLocation.x);
+    max->SetY(heightOfRoom+roomLocation.y);
+    max->SetZ((roomSize/2.0) + roomLocation.z);
+
+}

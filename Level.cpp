@@ -34,7 +34,7 @@ void Level::initLevel() {
 
 }
 
-void Level::drawLevel(GLuint* textures) {
+void Level::drawLevel(GLuint *textures) {
 
     for (auto it : rooms){
         it->drawRoom(textures);
@@ -42,7 +42,49 @@ void Level::drawLevel(GLuint* textures) {
 
 }
 
-void Level::getRoomBBox(VECTOR3D *min, VECTOR3D *max) {
+void Level::getRoomBBox(VECTOR3D *min, VECTOR3D *max, VECTOR3D playerPos) {
 
-//TODO: Implement this.
+    for (auto it : rooms){
+        if (insideRoom(it, &playerPos)){
+            it->getBBox(min, max);
+            if ((playerPos.GetX() > it->roomLocation.GetX()) && it->doorsInRoom[0]){
+                cout << "In right side of room" << endl;
+                if ((playerPos.GetZ() > (it->roomLocation.GetZ() - 1)) && (playerPos.GetZ() < (it->roomLocation.GetZ() + 1))){
+                    max->SetX(max->GetX() + 2.0);
+                }
+            }
+            else if ((playerPos.GetX() < it->roomLocation.GetX()) && it->doorsInRoom[1]){
+                cout << "In left side of room" << endl;
+                if ((playerPos.GetZ() > (it->roomLocation.GetZ() - 1)) && (playerPos.GetZ() < (it->roomLocation.GetZ() + 1))){
+                    min->SetX(min->GetX() - 2.0);
+                }
+            }
+            cout << "Player Pos X: {" << playerPos.GetX() <<  "}" << std::endl;
+            cout << "Player Pos Y: {" << playerPos.GetY() <<  "}" << std::endl;
+            cout << "Player Pos Z: {" << playerPos.GetZ() <<  "}" << std::endl;
+
+            cout << "Room BBox X: {" << min->GetX() << ", " << max->GetX() << "}" << std::endl;
+            cout << "Room BBox Y: {" << min->GetY() << ", " << max->GetY() << "}" << std::endl;
+            cout << "Room BBox Z: {" << min->GetZ() << ", " << max->GetZ() << "}" << std::endl;
+
+            return;
+        }
+    }
+    exit(222);
+
+}
+
+bool Level::insideRoom(Room *room, VECTOR3D *playerPos) {
+    VECTOR3D roomMin, roomMax;
+
+    room->getBBox(&roomMin, &roomMax);
+
+    if (playerPos->GetX() <= roomMax.GetX() && playerPos->GetX() > roomMin.GetX()){
+        if (playerPos->GetY() <= roomMax.GetY() && playerPos->GetY() > roomMin.GetY()) {
+            if (playerPos->GetZ() <= roomMax.GetZ() && playerPos->GetZ() > roomMin.GetZ()) {
+                return true;
+            }
+        }
+    }
+    return false;
 }

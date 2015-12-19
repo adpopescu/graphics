@@ -76,7 +76,7 @@ void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
     std::cout << "Z Bounds(Model): {" << boundVerticesZ[0] << ", " << boundVerticesZ[3] << "}" << std::endl;
 
     std::cout << "X Bounds(World): {" << boundVerticesX[0] +tx << ", " << boundVerticesX[3] +tx << "}" << std::endl;
-    std::cout << "Y Bounds(Model): {" << modelMinCoords[1] +ty << ", " << modelMaxCoords[1] +ty << "}" << std::endl;
+    std::cout << "Y Bounds(World): {" << modelMinCoords[1] +ty << ", " << modelMaxCoords[1] +ty << "}" << std::endl;
     std::cout << "Z Bounds(World): {" << boundVerticesZ[0] +tz << ", " << boundVerticesZ[3] +tz << "}" << std::endl;
 
     std::cout << std::endl;
@@ -88,4 +88,9 @@ void Mesh::getBBox(VECTOR3D *min, VECTOR3D *max) {
     max->SetX(boundVerticesX[3] + tx);
     max->SetY(modelMaxCoords[1] * sfy + ty);
     max->SetZ(boundVerticesZ[3] + tz);
+}
+
+VECTOR3D Mesh::getPos() {
+    return VECTOR3D(tx,ty,tz);
+
 }
