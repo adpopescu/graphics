@@ -4,12 +4,13 @@
 
 #include "RobotMesh.h"
 
-RobotMesh::RobotMesh() {
+RobotMesh::RobotMesh(VECTOR3D roomOrigin) {
 
     modelMaxCoords = {1.0, 3.0, 1.0};
     modelMinCoords = {-1.0, -1.0, -1.0};
-    ty = 1.0;
-    tx = tz = 0;
+    ty = 1.0 + roomOrigin.y;
+    tx = roomOrigin.x;
+    tz = roomOrigin.z;
     sfx = sfy = sfz = 1.0;
     angle = 0;
 

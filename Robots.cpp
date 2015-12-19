@@ -279,7 +279,9 @@ void initOpenGL(int w, int h)
     // Use the right-hand-rule (cross product)
     // If you are confused about this, ask in class
     level = new Level;
-    exploreMesh = new RobotMesh;
+    VECTOR3D origin = VECTOR3D(0.0,0.0,0.0);
+    exploreMesh = new RobotMesh(origin);
+
 
 
     // Set up the bounding box of the room
@@ -378,7 +380,8 @@ void mouseMotionHandler(int xMouse, int yMouse)
         mousePrevY = yMouse;
     }
 
-    VECTOR3D min, max;
+    VECTOR3D playerMin, playerMax;
+    VECTOR3D roomMin, roomMax;
 
 //  cout << "prevX: " << mousePrevX << endl << "X: " << xMouse << endl;
 //  cout << "prevY: " << mousePrevY << endl << "Y: " << yMouse << endl << endl;
@@ -386,11 +389,12 @@ void mouseMotionHandler(int xMouse, int yMouse)
 
         if (xMouse > mousePrevX) {
             exploreMesh->angle -= 0.5;
-            exploreMesh->getBBox(&min, &max);
-//            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
-//                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
-//                exploreMesh->angle += 0.5;
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if ((playerMax.z > roomMax.z) || (playerMin.z < roomMin.z) ||
+                (playerMax.x > roomMax.x) || (playerMin.x < roomMin.x)) {
+                exploreMesh->angle += 0.5;
+            }
             if (exploreMesh->angle == -360.0) {
                 exploreMesh->angle = 0.0;
             }
@@ -398,11 +402,12 @@ void mouseMotionHandler(int xMouse, int yMouse)
 
         else if (xMouse < mousePrevX) {
             exploreMesh->angle += 0.5;
-            exploreMesh->getBBox(&min, &max);
-//            if ((max.z > roomBBox.max.z) || (min.z < roomBBox.min.z) ||
-//                (max.x > roomBBox.max.x) || (min.x < roomBBox.min.x)) {
-//                exploreMesh->angle -= 0.5;
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if ((playerMax.z > roomMax.z) || (playerMin.z < roomMin.z) ||
+                (playerMax.x > roomMax.x) || (playerMin.x < roomMin.x)) {
+                exploreMesh->angle -= 0.5;
+            }
             if (exploreMesh->angle == 360.0) {
                 exploreMesh->angle = 0.0;
             }
@@ -452,82 +457,92 @@ VECTOR3D ScreenToWorld(int x, int y)
 /* Handles input from the keyboard, non-arrow keys */
 void keyboard(unsigned char key, int x, int y)
 {
-    VECTOR3D min, max;
+    VECTOR3D playerMin, playerMax;
+    VECTOR3D roomMin, roomMax;
     switch (key)
     {
         case 'w':
             exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&min, &max);
-//            if (max.z > roomBBox.max.z){
-//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-//            }
-//            else if (min.z < roomBBox.min.z) {
-//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-//            }
-//            if (max.x > roomBBox.max.x) {
-//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-//            }
-//            else if (min.x < roomBBox.min.x) {
-//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if (playerMax.z > roomMax.z){
+                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+            }
+            else if (playerMin.z < roomMin.z) {
+                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+            }
+            if (playerMax.x > roomMax.x) {
+                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+            }
+            else if (playerMin.x < roomMin.x) {
+                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+            }
             break;
         case 's':
             exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
             exploreMesh->tz += exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&min, &max);
-//            if (max.z > roomBBox.max.z){
-//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-//            }
-//            else if (min.z < roomBBox.min.z) {
-//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-//            }
-//            if (max.x > roomBBox.max.x) {
-//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-//            }
-//            else if (min.x < roomBBox.min.x) {
-//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if (playerMax.z > roomMax.z){
+                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+            }
+            else if (playerMin.z < roomMin.z) {
+                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+            }
+            if (playerMax.x > roomMax.x) {
+                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+            }
+            else if (playerMin.x < roomMin.x) {
+                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+            }
             break;
         case 'a':
             exploreMesh->tx += exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
             exploreMesh->tz -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&min, &max);
-//            if (max.z > roomBBox.max.z){
-//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-//            }
-//            else if (min.z < roomBBox.min.z) {
-//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-//            }
-//            if (max.x > roomBBox.max.x) {
-//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-//            }
-//            else if (min.x < roomBBox.min.x) {
-//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if (playerMax.z > roomMax.z){
+                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+            }
+            else if (playerMin.z < roomMin.z) {
+                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+            }
+            if (playerMax.x > roomMax.x) {
+                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+            }
+            else if (playerMin.x < roomMin.x) {
+                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+            }
             break;
         case 'd':
             exploreMesh->tx -= exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
             exploreMesh->tz += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&min, &max);
-//            if (max.z > roomBBox.max.z){
-//                exploreMesh->tz = roomBBox.max.z - 0.5 * (max.z - min.z);
-//            }
-//            else if (min.z < roomBBox.min.z) {
-//                exploreMesh->tz = roomBBox.min.z + 0.5 * (max.z - min.z);
-//            }
-//            if (max.x > roomBBox.max.x) {
-//                exploreMesh->tx = roomBBox.max.x - 0.5 * (max.x - min.x);
-//            }
-//            else if (min.x < roomBBox.min.x) {
-//                exploreMesh->tx = roomBBox.min.x + 0.5 * (max.x - min.x);
-//            }
+            exploreMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax);
+            if (playerMax.z > roomMax.z){
+                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+            }
+            else if (playerMin.z < roomMin.z) {
+                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+            }
+            if (playerMax.x > roomMax.x) {
+                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+            }
+            else if (playerMin.x < roomMin.x) {
+                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+            }
             break;
-        case 'z':
-            exploreMesh->ty -= exploreSpeed;
-            break;
-        case 'x':
-            exploreMesh->ty += exploreSpeed;
+
+            // For testing purposes only, to see rooms from outside.
+//        case 'z':
+//            exploreMesh->ty -= exploreSpeed;
+//            break;
+//        case 'x':
+//            exploreMesh->ty += exploreSpeed;
+//            break;
+        case ' ':
+            cout << "Hello" << endl;
             break;
         case 'q':
             exit(0);
@@ -537,13 +552,13 @@ void keyboard(unsigned char key, int x, int y)
 
 void functionKeys(int key, int x, int y){
 
-
+    //TODO: Add check for room bounding box to each movement.
     VECTOR3D min, max;
         // Do transformation code with arrow keys
         // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
     if (key == GLUT_KEY_F1)
     {
-        RobotMesh* newMesh = new RobotMesh;
+        RobotMesh* newMesh = new RobotMesh(nullptr);
         meshList.push_front(newMesh);
     }
 
@@ -611,5 +626,6 @@ void functionKeys(int key, int x, int y){
         }
 
     }
+
     glutPostRedisplay();
 }

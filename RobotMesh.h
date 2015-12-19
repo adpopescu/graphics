@@ -20,7 +20,7 @@ private:
 
 public:
 
-    RobotMesh();
+    RobotMesh(VECTOR3D roomOrigin);
 
     void drawMesh(GLuint* textures);
 

@@ -21,11 +21,11 @@ Level::Level() {
 
 void Level::initLevel() {
 
-    Room* tempRoom = new Room(room1_Origin, room1_size);
+    Room* tempRoom = new Room(room1_Origin, room1_size, room1_doors);
     rooms.push_front(tempRoom);
-    tempRoom = new Room(room2_Origin, room2_size);
+    tempRoom = new Room(room2_Origin, room2_size, room2_doors);
     rooms.push_front(tempRoom);
-    tempRoom = new Room(room3_Origin, room3_size);
+    tempRoom = new Room(room3_Origin, room3_size, room3_doors);
     rooms.push_front(tempRoom);
 
     for (auto it : rooms){
@@ -40,4 +40,9 @@ void Level::drawLevel(GLuint* textures) {
         it->drawRoom(textures);
     }
 
+}
+
+void Level::getRoomBBox(VECTOR3D *min, VECTOR3D *max) {
+
+//TODO: Implement this.
 }

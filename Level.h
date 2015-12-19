@@ -17,6 +17,7 @@ public:
     Level();
     void initLevel();
     void drawLevel(GLuint* textures);
+    void getRoomBBox(VECTOR3D* min, VECTOR3D* max);
 
 private:
     forward_list<Room*> rooms;
@@ -26,6 +27,9 @@ private:
     float room1_size;
     float room2_size;
     float room3_size;
+    int room1_doors[4] = {1,1,0,0};
+    int room2_doors[4] = {1,0,0,0};
+    int room3_doors[4] = {0,1,0,0};
 
 };
 
