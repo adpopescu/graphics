@@ -6,8 +6,8 @@
 
 RobotMesh::RobotMesh(VECTOR3D robotStartPos, float robotStartAngle) {
 
-    modelMaxCoords = {0.5, 3.0, 0.5};
-    modelMinCoords = {-0.5, -0.5, -0.5};
+    modelMaxCoords = {1.0, 3.0, 1.0};
+    modelMinCoords = {-1.0, -1.0, -1.0};
     ty = 1.0 + robotStartPos.y;
     tx = robotStartPos.x;
     tz = robotStartPos.z;
@@ -115,4 +115,8 @@ void RobotMesh::drawMesh(GLuint* textures) {
 
 
     glPopMatrix();
+}
+
+int RobotMesh::getMaxProjectiles() {
+    return maxProjectiles;
 }

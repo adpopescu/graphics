@@ -10,14 +10,14 @@ ProjectileMesh::ProjectileMesh(RobotMesh *robot) {
     modelMinCoords = {-1.0, -1.0, -1.0};
     angle = robot->angle;
     ty = robot->ty;
-    tx = robot->tx + 1.0 * cos(angle*2*PI/360.0);
-    tz = robot->tz - 1.0 * sin(angle*2*PI/360.0);
+    tx = robot->tx + 2.0 * cos(angle*2*PI/360.0);
+    tz = robot->tz - 2.0 * sin(angle*2*PI/360.0);
     sfx = sfy = sfz = 1.0;
 
 
     projectileLength = 0.1;
     projectileRadius = 0.08;
-    projectileSpeed = 0.3;
+    projectileSpeed = 0.1;
 }
 
 void ProjectileMesh::drawMesh() {

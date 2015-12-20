@@ -18,11 +18,14 @@ private:
 
     GLUquadricObj *qobj;
 
+    int maxProjectiles = 5;
+
 public:
 
     RobotMesh(VECTOR3D robotStartPos, float robotStartAngle);
 
-    bool playerMesh;
+    int curProjectiles;
+    int getMaxProjectiles();
 
     void drawMesh(GLuint* textures);
 

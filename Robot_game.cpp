@@ -46,7 +46,7 @@ enum Action currentAction = TRANSLATE;
 
 RobotMesh* playerMesh = NULL;
 GLdouble playerMoveSpeed = 0.5;
-int playerHealth = 20;
+int playerHealth = 40;
 
 Level* level = NULL;
 
@@ -302,6 +302,7 @@ void initOpenGL(int w, int h)
     level = new Level;
     VECTOR3D origin = VECTOR3D(-5.0,0.0,10.0);
     playerMesh = new RobotMesh(origin, 0.0);
+    srand(time(NULL));
 
 
 
@@ -337,7 +338,7 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
 
     // Make robots do things
-    srand(time(NULL));
+
     level->animateRooms(playerMesh->getPos());
 
     // Draw all objects
@@ -378,8 +379,8 @@ void display(void)
             playerHealth--;
             cout << "Player health: " << playerHealth << endl;
             if (playerHealth < 0){
-//                cout << "You lose." << endl;
-//                exit(0);
+                cout << "You lose." << endl;
+                exit(0);
             }
         }
 

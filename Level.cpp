@@ -27,7 +27,7 @@ void Level::initLevel() {
     rooms.push_front(tempRoom);
     tempRoom = new Room(room2_Origin, room2_size, room2_doors, 1);
     rooms.push_front(tempRoom);
-    tempRoom = new Room(room3_Origin, room3_size, room3_doors, 4);
+    tempRoom = new Room(room3_Origin, room3_size, room3_doors, 3);
     rooms.push_front(tempRoom);
 
     for (auto it : rooms){
@@ -111,6 +111,13 @@ Room* Level::getRoom(VECTOR3D objectPos) {
 
 void Level::animateRooms(VECTOR3D playerPos) {
     cout << "Animating rooms" << endl;
+    if (robotsSoFar >= maxLevelRobots){
+        if(allRobotsDead()){
+            cout << "You Win" << endl;
+            exit(0);
+        }
+    }
+
     for (auto room : rooms){
         if (insideRoom(room, &playerPos)){
             for (auto rob : room->robots){
@@ -119,21 +126,20 @@ void Level::animateRooms(VECTOR3D playerPos) {
 
                 cout << "X dif: " << xDif << endl;
                 cout << "Z dif: " << zDif << endl;
-                if (xDif > 0.0){
-                    rob->angle = -atan(zDif / xDif) / (2 * PI) * 360;
-                }
-                else {
-                    rob->angle = -atan(zDif / xDif) / (2 * PI) * 360 + 180;
-                }
+                rob->angle = -atan2(zDif, xDif) / (2 * PI) * 360;
                 if (curCount < proCount){
-                    ProjectileMesh *tempProjectile = new ProjectileMesh(rob);
-                    projectileList.push_front(tempProjectile);
-                    curCount++;
+                    int test = rand() % 1000;
+                    if (test <= 5) {
+                        ProjectileMesh *tempProjectile = new ProjectileMesh(rob);
+                        projectileList.push_front(tempProjectile);
+                        curCount++;
+                    }
                 }
             }
         }
         else{
-            int randNum = rand() % 100;
+            int randNum = rand() % 10000;
+            cout << "Random Number: " << randNum << endl;
             if (randNum <= 50){
                 if (robotsSoFar <= maxLevelRobots){
                     if (room->makeRobot()){
@@ -167,4 +173,13 @@ void Level::animateRooms(VECTOR3D playerPos) {
             }
         }
     }
+}
+
+bool Level::allRobotsDead() {
+    for (auto room : rooms){
+        if (!room->robots.empty()){
+                return false;
+        }
+    }
+    return true;
 }

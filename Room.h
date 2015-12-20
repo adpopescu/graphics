@@ -22,6 +22,7 @@ public:
     bool makeRobot();
 
     int robotCount = 0;
+    int getMaxRobots();
 
 
     // Origin of the room

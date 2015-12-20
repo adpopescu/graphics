@@ -171,9 +171,8 @@ bool Room::makeRobot() {
     VECTOR3D min, max;
     getBBox(&min, &max);
     if (robotCount < maxRobots){
-
-        float randX = rand() % (int)ceil(roomSize-1) - (roomSize-2)/2;
-        float randZ = rand() % (int)ceil(roomSize-1) - (roomSize-2)/2;
+        float randX = rand() % (int)(roomSize-1) - (roomSize-2)/2;
+        float randZ = rand() % (int)(roomSize-1) - (roomSize-2)/2;
         float randAngle = rand() % 361;
         VECTOR3D randomStart = VECTOR3D(randX + roomLocation.x, roomLocation.y, randZ + roomLocation.z);
         RobotMesh* tempRobot = new RobotMesh(randomStart, randAngle);
@@ -182,4 +181,8 @@ bool Room::makeRobot() {
         return true;
     }
     return false;
+}
+
+int Room::getMaxRobots() {
+    return maxRobots;
 }

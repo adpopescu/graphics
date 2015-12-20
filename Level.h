@@ -22,6 +22,7 @@ public:
     bool getRoomBBox(VECTOR3D *min, VECTOR3D *max, VECTOR3D objectPos);
     Room* getRoom(VECTOR3D objectPos);
     void animateRooms(VECTOR3D playerPos);
+    bool allRobotsDead();
     forward_list<ProjectileMesh*> projectileList;
     int curCount = 0;
     int maxLevelRobots = 10;
@@ -42,7 +43,7 @@ private:
     int room3_doors[4] = {0,1,0,0};
 
     int proCount = 10;
-    int enemySpeed = 0.1;
+    float enemySpeed = 0.01;
 
 
 };
