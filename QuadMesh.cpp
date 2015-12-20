@@ -141,10 +141,10 @@ void QuadMesh::DrawMesh(int meshSize)
 {
     int currentQuad=0;
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+//    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+//    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+//    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+//    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
     for(int j=0; j< meshSize; j++)
     {
@@ -155,6 +155,7 @@ void QuadMesh::DrawMesh(int meshSize)
             glNormal3f(quads[currentQuad].vertices[0]->normal.x,
                        quads[currentQuad].vertices[0]->normal.y,
                        quads[currentQuad].vertices[0]->normal.z);
+            glTexCoord2d(0.0, 0.0);
             glVertex3f(quads[currentQuad].vertices[0]->position.x,
                        quads[currentQuad].vertices[0]->position.y,
                        quads[currentQuad].vertices[0]->position.z);
@@ -162,7 +163,7 @@ void QuadMesh::DrawMesh(int meshSize)
             glNormal3f(quads[currentQuad].vertices[1]->normal.x,
                        quads[currentQuad].vertices[1]->normal.y,
                        quads[currentQuad].vertices[1]->normal.z);
-
+            glTexCoord2d(0.0, 1.0);
             glVertex3f(quads[currentQuad].vertices[1]->position.x,
                        quads[currentQuad].vertices[1]->position.y,
                        quads[currentQuad].vertices[1]->position.z);
@@ -170,7 +171,7 @@ void QuadMesh::DrawMesh(int meshSize)
             glNormal3f(quads[currentQuad].vertices[2]->normal.x,
                        quads[currentQuad].vertices[2]->normal.y,
                        quads[currentQuad].vertices[2]->normal.z);
-
+            glTexCoord2d(1.0, 1.0);
             glVertex3f(quads[currentQuad].vertices[2]->position.x,
                        quads[currentQuad].vertices[2]->position.y,
                        quads[currentQuad].vertices[2]->position.z);
@@ -178,7 +179,7 @@ void QuadMesh::DrawMesh(int meshSize)
             glNormal3f(quads[currentQuad].vertices[3]->normal.x,
                        quads[currentQuad].vertices[3]->normal.y,
                        quads[currentQuad].vertices[3]->normal.z);
-
+            glTexCoord2d(1.0, 0.0);
             glVertex3f(quads[currentQuad].vertices[3]->position.x,
                        quads[currentQuad].vertices[3]->position.y,
                        quads[currentQuad].vertices[3]->position.z);

@@ -7,7 +7,7 @@
 
 #include "Mesh.h"
 
-class AutoMesh : public Mesh {
+class RobotMesh : public Mesh {
 
 private:
 
@@ -18,23 +18,27 @@ private:
 
     GLUquadricObj *qobj;
 
+    int maxProjectiles = 5;
 
 public:
 
-    AutoMesh();
+    RobotMesh(VECTOR3D robotStartPos, float robotStartAngle);
 
-    void drawMesh();
+    int curProjectiles;
+    int getMaxProjectiles();
 
-    float bodyWidth;
-    float bodyLength;
-    float bodyHeight;
+    void drawMesh(GLuint* textures);
 
-    float cockpitWidth;
-    float cockpitLength;
-    float cockpitHeight;
+    float lowerBodyRadius;
 
-    float wheelRadius;
-    float wheelHeight;
+    float upperBodyRadiusLower;
+    float upperBodyRadiusUpper;
+    float upperBodyHeight;
+
+    float headRadius;
+
+    float launcherRadius;
+    float launcherLength;
 
 };
 

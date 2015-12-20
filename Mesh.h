@@ -34,8 +34,9 @@ public:
 
     Mesh();
 
-    virtual void drawMesh();
+    virtual void drawMesh(GLuint* textures);
     virtual void getBBox(VECTOR3D *min, VECTOR3D *max);
+    virtual VECTOR3D getPos();
 
     float tx, ty, tz;			// Translation Deltas
     float sfx, sfy, sfz;		// Scale Factors

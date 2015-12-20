@@ -4,45 +4,45 @@
 
 #include "RobotMesh.h"
 
-AutoMesh::AutoMesh() {
+RobotMesh::RobotMesh(VECTOR3D robotStartPos, float robotStartAngle) {
 
-    modelMaxCoords = {1.5, 0.9, 1.05};
-    modelMinCoords = {-1.5, -0.75, -1.05};
-    ty = 0.75;
-    tx = tz = 0;
+    modelMaxCoords = {1.0, 3.0, 1.0};
+    modelMinCoords = {-1.0, -1.0, -1.0};
+    ty = 1.0 + robotStartPos.y;
+    tx = robotStartPos.x;
+    tz = robotStartPos.z;
     sfx = sfy = sfz = 1.0;
-    angle = 0;
+    angle = robotStartAngle;
 
-    bodyWidth = 1.6;
-    bodyLength = 3.0;
-    bodyHeight = 1.0;
+    lowerBodyRadius = 1.0;
 
-    cockpitWidth = 1.2;
-    cockpitLength = 2.0;
-    cockpitHeight = 0.4;
+    upperBodyRadiusLower = 0.5;
+    upperBodyRadiusUpper = upperBodyRadiusLower*0.25;
+    upperBodyHeight = 2.0;
 
+    headRadius = 0.2;
 
-    wheelRadius = 0.25;
-    wheelHeight = 0.15;
+    launcherRadius = 0.11;
+    launcherLength = 1.0;
 
 }
 
-void AutoMesh::drawMesh() {
+void RobotMesh::drawMesh(GLuint* textures) {
 
-    if (selected)
-    {
-        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
-        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
-        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
-    }
-    else
-    {
-        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
-    }
+//    if (selected)
+//    {
+//        glMaterialfv(GL_FRONT, GL_AMBIENT, HighlightMat_ambient);
+//        glMaterialfv(GL_FRONT, GL_SPECULAR, HighlightMat_specular);
+//        glMaterialfv(GL_FRONT, GL_DIFFUSE, HighlightMat_diffuse);
+//        glMaterialfv(GL_FRONT, GL_SHININESS, HighlightMat_shininess);
+//    }
+//    else
+//    {
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Mat_ambient);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Mat_specular);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Mat_diffuse);
+//        glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Mat_shininess);
+//    }
 
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
@@ -50,80 +50,73 @@ void AutoMesh::drawMesh() {
     glRotatef(angle, 0.0, 1.0, 0.0);
     glScalef(sfx, sfy, sfz);
 
-    // draw body
+    // draw lower body
     glPushMatrix();
-    glScalef(bodyLength,bodyHeight,bodyWidth);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    // draw cockpit
-    glPushMatrix();
-    glTranslatef(0.0, 0.7, 0.0);
-    glScalef(cockpitLength, cockpitHeight, cockpitWidth);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
-    // draw wheels
-    glPushMatrix();
-    glTranslatef(1.0,-0.5,0.70);
+    glBindTexture(GL_TEXTURE_2D, textures[3]);
     qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
     gluQuadricDrawStyle(qobj,GLU_FILL);
+    glPolygonMode(GL_FRONT, GL_FILL);
     gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
-    gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-1.0,-0.5,0.70);
-    qobj = gluNewQuadric();
-    gluQuadricDrawStyle(qobj,GLU_FILL);
-    gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
-    gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(1.0,-0.5,-0.70);
-    glRotatef(180, 0.0, 1.0, 0.0);
-    qobj = gluNewQuadric();
-    gluQuadricDrawStyle(qobj,GLU_FILL);
-    gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
-    gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(-1.0,-0.5,-0.70);
-    glRotatef(180, 0.0, 1.0, 0.0);
-    qobj = gluNewQuadric();
-    gluQuadricDrawStyle(qobj,GLU_FILL);
-    gluQuadricNormals(qobj,GLU_SMOOTH);
-    gluCylinder(qobj, wheelRadius, wheelRadius, wheelHeight, 32, 10);
-    //draw the first cap
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glTranslatef(0, 0, wheelHeight);
-    //draw the second cap
-    gluQuadricOrientation(qobj,GLU_OUTSIDE);
-    gluDisk(qobj, 0.0, wheelRadius, 32, 1);
-    glPopMatrix();
-
+    gluSphere(qobj,lowerBodyRadius,32,10);
     gluDeleteQuadric(qobj);
-
     glPopMatrix();
 
+    // draw head
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[5]);
+    glTranslatef(0.0, headRadius+lowerBodyRadius+upperBodyHeight*0.9, 0.0);
+    qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
+    gluQuadricDrawStyle(qobj,GLU_FILL);
+    gluQuadricNormals(qobj,GLU_SMOOTH);
+    gluSphere(qobj,headRadius,32,10);
+    gluDeleteQuadric(qobj);
+    glPopMatrix();
+
+    // draw upper body
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[4]);
+    glTranslatef(0.0, 0.9, 0.0);
+    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
+    gluQuadricDrawStyle(qobj,GLU_FILL);
+    gluQuadricNormals(qobj,GLU_SMOOTH);
+    gluCylinder(qobj, upperBodyRadiusLower, upperBodyRadiusUpper, upperBodyHeight, 32, 10);
+    //draw the first cap
+    gluDisk(qobj, 0.0, upperBodyRadiusLower, 32, 1);
+    glTranslatef(0, 0, upperBodyHeight);
+    //draw the second cap
+    gluQuadricOrientation(qobj,GLU_OUTSIDE);
+    gluDisk(qobj, 0.0, upperBodyRadiusUpper, 32, 1);
+    gluDeleteQuadric(qobj);
+    glPopMatrix();
+
+    //draw weapon
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textures[5]);
+    glTranslatef(0.0, 2.75, 0.0);
+    glRotatef(90.0, 0.0, 1.0, 0.0);
+    qobj = gluNewQuadric();
+    gluQuadricTexture(qobj, GL_TRUE);
+    gluQuadricDrawStyle(qobj,GLU_FILL);
+    gluQuadricNormals(qobj,GLU_SMOOTH);
+    gluCylinder(qobj, launcherRadius, launcherRadius, launcherLength, 32, 10);
+    gluQuadricTexture(qobj, GL_FALSE);
+    //draw the first cap
+    gluDisk(qobj, 0.0, launcherRadius, 32, 1);
+    glTranslatef(0, 0, launcherLength);
+    //draw the second cap
+    gluQuadricOrientation(qobj,GLU_OUTSIDE);
+    gluDisk(qobj, 0.0, launcherRadius, 32, 1);
+    gluDeleteQuadric(qobj);
+    glPopMatrix();
+
+
+    glPopMatrix();
+}
+
+int RobotMesh::getMaxProjectiles() {
+    return maxProjectiles;
 }
