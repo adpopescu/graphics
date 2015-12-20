@@ -1,8 +1,19 @@
 # graphics
 #
-# Cmake file included, must have make installed.
+# Cmake file included, must have cmake installed.
 # Alternatively you can download Clion IDE from Jetbrains and import, or import into any other IDE that takes understands Cmake
 #
+# You will have to copy into your cmake folder the findSOIL.cmake file that I have provided in the zip file.
+# 
+# I've included a video with the location that the .cmake file will need to be copied into, if you are using the CLION IDE that I specified above. There is also a video demonstrating the program functionality just in case.
+#
+# Im using the SOIL library for loading the textures images. You will have to download that library as well.
+# On ubuntu the package is libsoil-dev.
+#
+#
+# sudo apt-get install libsoil-dev
+#
+# mkdir build
 # cd build/
 # cmake ../
 # make
@@ -12,11 +23,14 @@
 #
 # compiled on ubuntu 14.04 LTS
 #
-# Move camera by holding down left mouse button and moving mouse around.
-# Zoom in and out by holding right mouse button and moving mouse forward and backward.
-# Generate objects using the F1 - F4 keys.
-# Enter exploration mode with F5.
-# Exit exploration mode with F6.
+# Move camera by holding down right mouse button and moving mouse around.
+# Move around the level by pushing the 'w', 's', 'a', and 'd' keys.
+# Fire projectile by pushing space bar.
+# Quit game by pushing 'q' key.
+# Game ends when you have killed 10 robots in total or when your life is reduced to zero.
+# 
+#
+# Assignment 3 Second Submission: All features implemented as specified. Please check video for full description.
 #
 #
 # Assignment 3 Note: Not even nearly done. Have almost nothing implemented. Will resubmit later on, in between exams.
