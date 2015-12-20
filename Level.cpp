@@ -156,19 +156,19 @@ void Level::animateRooms(VECTOR3D playerPos) {
                 room->getBBox(&roomMin, &roomMax);
                 if (robMax.z > roomMax.z){
                     rob->tz = roomMax.z - 0.5 * (robMax.z - robMin.z);
-                    rob->angle += 135;
+                    rob->angle += 100;
                 }
                 else if (robMin.z < roomMin.z) {
                     rob->tz = roomMin.z + 0.5 * (robMax.z - robMin.z);
-                    rob->angle += 135;
+                    rob->angle += 100;
                 }
                 if (robMax.x > roomMax.x) {
                     rob->tx = roomMax.x - 0.5 * (robMax.x - robMin.x);
-                    rob->angle += 135;
+                    rob->angle += 100;
                 }
                 else if (robMin.x < roomMin.x) {
                     rob->tx = roomMin.x + 0.5 * (robMax.x - robMin.x);
-                    rob->angle += 135;
+                    rob->angle += 100;
                 }
             }
         }
