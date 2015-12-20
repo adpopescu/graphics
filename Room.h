@@ -15,10 +15,13 @@ using namespace std;
 class Room {
 
 public:
-    Room(VECTOR3D location, float size, int door[4]);
+    Room(VECTOR3D location, float size, int door[4], int maxRobots);
     void initRoom();
     void drawRoom(GLuint *textures);
     void getBBox(VECTOR3D* min, VECTOR3D* max);
+    bool makeRobot();
+
+    int robotCount = 0;
 
 
     // Origin of the room
@@ -27,14 +30,16 @@ public:
     float roomSize;
     int* doorsInRoom;
 
+    forward_list<RobotMesh*> robots;
+
 private:
     int meshSize;
     float shininess;
 
-    forward_list<RobotMesh*> robots;
-
     const float heightOfRoom = 8.0;
     const float doorSize = 4.0;
+
+    int maxRobots;
 
     QuadMesh *floorMesh;
     QuadMesh *rightMesh1;

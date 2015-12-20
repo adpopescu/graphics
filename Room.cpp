@@ -4,8 +4,9 @@
 
 #include "Room.h"
 
-Room::Room(VECTOR3D location, float size, int door[4]) {
+Room::Room(VECTOR3D location, float size, int door[4], int maxRobots) {
 
+    this->maxRobots = maxRobots;
     doorsInRoom = door;
     roomLocation = location;
     roomSize = size;
@@ -122,10 +123,6 @@ void Room::initRoom() {
         frontMesh->SetMaterial(ambient, diffuse, specular, shininess);
     }
 
-
-    RobotMesh* tempRobot = new RobotMesh(roomLocation);
-    robots.push_front(tempRobot);
-
 }
 
 void Room::drawRoom(GLuint *textures) {
@@ -168,4 +165,21 @@ void Room::getBBox(VECTOR3D *min, VECTOR3D *max) {
     max->SetY(heightOfRoom+roomLocation.y);
     max->SetZ((roomSize/2.0) + roomLocation.z);
 
+}
+
+bool Room::makeRobot() {
+    VECTOR3D min, max;
+    getBBox(&min, &max);
+    if (robotCount < maxRobots){
+
+        float randX = rand() % (int)ceil(roomSize-1) - (roomSize-2)/2;
+        float randZ = rand() % (int)ceil(roomSize-1) - (roomSize-2)/2;
+        float randAngle = rand() % 361;
+        VECTOR3D randomStart = VECTOR3D(randX + roomLocation.x, roomLocation.y, randZ + roomLocation.z);
+        RobotMesh* tempRobot = new RobotMesh(randomStart, randAngle);
+        robots.push_front(tempRobot);
+        robotCount++;
+        return true;
+    }
+    return false;
 }

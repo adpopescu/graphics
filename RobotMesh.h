@@ -20,7 +20,9 @@ private:
 
 public:
 
-    RobotMesh(VECTOR3D roomOrigin);
+    RobotMesh(VECTOR3D robotStartPos, float robotStartAngle);
+
+    bool playerMesh;
 
     void drawMesh(GLuint* textures);
 

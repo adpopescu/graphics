@@ -4,15 +4,15 @@
 
 #include "RobotMesh.h"
 
-RobotMesh::RobotMesh(VECTOR3D roomOrigin) {
+RobotMesh::RobotMesh(VECTOR3D robotStartPos, float robotStartAngle) {
 
-    modelMaxCoords = {1.0, 3.0, 1.0};
-    modelMinCoords = {-1.0, -1.0, -1.0};
-    ty = 1.0 + roomOrigin.y;
-    tx = roomOrigin.x;
-    tz = roomOrigin.z;
+    modelMaxCoords = {0.5, 3.0, 0.5};
+    modelMinCoords = {-0.5, -0.5, -0.5};
+    ty = 1.0 + robotStartPos.y;
+    tx = robotStartPos.x;
+    tz = robotStartPos.z;
     sfx = sfy = sfz = 1.0;
-    angle = 0;
+    angle = robotStartAngle;
 
     lowerBodyRadius = 1.0;
 

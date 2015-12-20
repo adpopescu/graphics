@@ -5,18 +5,21 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-#include <stdio.h>
 #include <utility>
 #include <vector>
-#include <list>
+#include <forward_list>
 #include <iterator>
 #include <iostream>
 #include "RobotMesh.h"
 #include "Level.h"
+#include "ProjectileMesh.h"
 #include <SOIL/SOIL.h>
+
+#define DEBUG_MODE 0
 
 void initOpenGL(int w, int h);
 void display(void);
+void testDisplay(void);
 void reshape(int w, int h);
 void mouse(int button, int state, int x, int y);
 void mouseMotionHandler(int xMouse, int yMouse);
@@ -35,18 +38,15 @@ GLfloat light_ambient[]   = {0.2, 0.2, 0.2, 1.0};
 
 using namespace std;
 
-// Cube Mesh Array variables and initialization
-list<Mesh*> meshList;
 
-// also add a variable to keep track of current cube mesh
-auto currentMesh = meshList.begin();
 
 // Interaction State Variable
 enum Action {TRANSLATE, ROTATE, SCALE, EXTRUDE, RAISE, SELECT, MULTIPLESELECT, DESELECT_ALL, EXPLORE};
 enum Action currentAction = TRANSLATE;
 
-Mesh* exploreMesh = NULL;
-GLdouble exploreSpeed = 0.5;
+RobotMesh* playerMesh = NULL;
+GLdouble playerMoveSpeed = 0.5;
+int playerHealth = 20;
 
 Level* level = NULL;
 
@@ -75,6 +75,7 @@ int main(int argc, char **argv)
     initOpenGL(1280,720);
 
     glutDisplayFunc(display);
+    glutIdleFunc(display);
     glutReshapeFunc(reshape);
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMotionHandler);
@@ -95,7 +96,11 @@ void makeTextures() {
     cout << glGetError() << endl;
 
     unsigned char* image = SOIL_load_image("textures/palace_floor.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+
+    if (DEBUG_MODE){
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[0]);
@@ -112,12 +117,16 @@ void makeTextures() {
     cout << glGetError() << endl;
 //    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
 
     image = SOIL_load_image("textures/metallic_wall.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    if (DEBUG_MODE) {
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[1]);
@@ -134,11 +143,15 @@ void makeTextures() {
     cout << glGetError() << endl;
 //    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
     image = SOIL_load_image("textures/spaceship_ceiling.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    if (DEBUG_MODE) {
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[2]);
@@ -155,11 +168,15 @@ void makeTextures() {
     cout << glGetError() << endl;
 //    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
     image = SOIL_load_image("textures/tire.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    if (DEBUG_MODE) {
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[3]);
@@ -176,11 +193,15 @@ void makeTextures() {
     cout << glGetError() << endl;
 //    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
     image = SOIL_load_image("textures/battered_robot.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    if (DEBUG_MODE) {
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[4]);
@@ -196,11 +217,15 @@ void makeTextures() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     cout << glGetError() << endl;
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
     image = SOIL_load_image("textures/blue_rusted_metal.jpg", &width, &height, &channels, SOIL_LOAD_RGB);
-    cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    if (DEBUG_MODE) {
+        cout << "Width: " << width << endl << "Height: " << height << endl << "Channels: " << channels << endl;
+    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     cout << glGetError() << endl;
     glBindTexture(GL_TEXTURE_2D, texture[5]);
@@ -217,8 +242,10 @@ void makeTextures() {
     cout << glGetError() << endl;
 //    texture = SOIL_load_OGL_texture("textures/floor.jpg", 3, texture, SOIL_FLAG_POWER_OF_TWO|SOIL_FLAG_TEXTURE_REPEATS);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    cout << "Load image into 2D texture: " << glGetError() << endl;
-    cout << "texture: " << texture << endl;
+    if (DEBUG_MODE) {
+        cout << "Load image into 2D texture: " << glGetError() << endl;
+        cout << "texture: " << texture << endl;
+    }
 
 }
 
@@ -257,7 +284,9 @@ void initOpenGL(int w, int h)
     // Other OpenGL setup
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
-    cout << "Enable 2D Textures: " << glGetError() << endl;
+    if (DEBUG_MODE) {
+        cout << "Enable 2D Textures: " << glGetError() << endl;
+    }
 
 
     // This one is important - renormalize normal vectors
@@ -271,8 +300,8 @@ void initOpenGL(int w, int h)
     // Use the right-hand-rule (cross product)
     // If you are confused about this, ask in class
     level = new Level;
-    VECTOR3D origin = VECTOR3D(0.0,0.0,0.0);
-    exploreMesh = new RobotMesh(origin);
+    VECTOR3D origin = VECTOR3D(-5.0,0.0,10.0);
+    playerMesh = new RobotMesh(origin, 0.0);
 
 
 
@@ -280,7 +309,7 @@ void initOpenGL(int w, int h)
     // Change this if you change your floor/wall dimensions
 
     //Starting Camera Position
-    radiusCam = 20.0;
+    radiusCam = 10.0;
     inclinationCam = -3.0;
 //    azimuthCam = PI;
 }
@@ -292,28 +321,96 @@ void display(void)
     glLoadIdentity();
 
     // Set up the camera
-    camPosX = exploreMesh->tx;
-    camPosY = exploreMesh->ty + exploreMesh->modelMaxCoords[1]+0.5;
-    camPosZ = exploreMesh->tz;
-    lookAtX = exploreMesh->tx + radiusCam * cos(exploreMesh->angle*2*PI/360);
+    camPosX = playerMesh->tx;
+    camPosY = playerMesh->ty + playerMesh->modelMaxCoords[1] + 0.5;
+    camPosZ = playerMesh->tz;
+    lookAtX = playerMesh->tx + radiusCam * cos(playerMesh->angle * 2 * PI / 360);
     lookAtY = camPosY + inclinationCam;
-    lookAtZ = exploreMesh->tz + radiusCam * -sin(exploreMesh->angle*2*PI/360);
+    lookAtZ = playerMesh->tz + radiusCam * -sin(playerMesh->angle * 2 * PI / 360);
 
     //cout << inclinationCam << endl << azimuthCam << endl << endl;
     gluLookAt(camPosX, camPosY, camPosZ, lookAtX, lookAtY, lookAtZ, 0.0, 1.0, 0.0);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0,1.0,0.01*radiusCam,4.0*radiusCam);
+    gluPerspective(60.0,1.0,0.01*radiusCam,40.0*radiusCam);
     glMatrixMode(GL_MODELVIEW);
 
+    // Make robots do things
+    srand(time(NULL));
+    level->animateRooms(playerMesh->getPos());
+
     // Draw all objects
-    for (auto it : meshList){
-        it->drawMesh(texture);
+    VECTOR3D roomMin, roomMax;
+    forward_list<ProjectileMesh*> projectileDeleteList;
+    forward_list<RobotMesh*> robotDeleteList;
+
+    if (DEBUG_MODE) {
+        cout << endl << "Drawing Meshes" << endl;
     }
-    //draw explore mesh
-    if (exploreMesh){
-        exploreMesh->drawMesh(texture);
+    for (auto it : level->projectileList){
+
+        Room *currentRoom;
+        cout << "X: " << it->getPos().GetX() << endl;
+        currentRoom = level->getRoom(it->getPos());
+        VECTOR3D robotMin, robotMax;
+
+        for (auto rob : currentRoom->robots){
+            rob->getBBox(&robotMin, &robotMax);
+            if ((it->getPos().GetZ() < robotMax.GetZ()) && (it->getPos().GetZ() > robotMin.GetZ()) &&
+                (it->getPos().GetX() < robotMax.GetX()) && (it->getPos().GetX() > robotMin.GetX())) {
+                projectileDeleteList.push_front(it);
+                robotDeleteList.push_front(rob);
+            }
+        }
+        for (auto rob : robotDeleteList){
+            if (DEBUG_MODE) {
+                cout << endl << "Deleting Robot" << endl;
+            }
+            currentRoom->robots.remove(rob);
+            currentRoom->robotCount--;
+        }
+
+        playerMesh->getBBox(&robotMin, &robotMax);
+        if ((it->getPos().GetZ() < robotMax.GetZ()) && (it->getPos().GetZ() > robotMin.GetZ()) &&
+            (it->getPos().GetX() < robotMax.GetX()) && (it->getPos().GetX() > robotMin.GetX())) {
+            projectileDeleteList.push_front(it);
+            playerHealth--;
+            cout << "Player health: " << playerHealth << endl;
+            if (playerHealth < 0){
+//                cout << "You lose." << endl;
+//                exit(0);
+            }
+        }
+
+        if (level->getRoomBBox(&roomMin, &roomMax, it->getPos())){
+            if (DEBUG_MODE) {
+                cout << endl << "Projectile In Room" << endl;
+            }
+            it->drawMesh();
+            it->tx += it->getSpeed() * cos(it->angle * 2 * PI / 360);
+            it->tz -= it->getSpeed() * sin(it->angle * 2 * PI / 360);
+            if ((it->getPos().GetZ() > roomMax.GetZ()) || (it->getPos().GetZ() < roomMin.GetZ()) ||
+                (it->getPos().GetX() > roomMax.GetX()) || (it->getPos().GetX() < roomMin.GetX())) {
+                projectileDeleteList.push_front(it);
+            }
+        }
+        else{
+            projectileDeleteList.push_front(it);
+        }
+
+
+    }
+    for (auto it : projectileDeleteList){
+        if (DEBUG_MODE) {
+            cout << endl << "Deleting Projectile" << endl;
+        }
+        level->projectileList.remove(it);
+        level->curCount--;
+    }
+    //draw player mesh
+    if (playerMesh){
+        playerMesh->drawMesh(texture);
     }
 
     // Draw floor and wall meshes
@@ -378,28 +475,28 @@ void mouseMotionHandler(int xMouse, int yMouse)
     if (currentButton == GLUT_RIGHT_BUTTON) {
 
         if (xMouse > mousePrevX) {
-            exploreMesh->angle -= 0.5;
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->angle -= 0.5;
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if ((playerMax.z > roomMax.z) || (playerMin.z < roomMin.z) ||
                 (playerMax.x > roomMax.x) || (playerMin.x < roomMin.x)) {
-                exploreMesh->angle += 0.5;
+                playerMesh->angle += 0.5;
             }
-            if (exploreMesh->angle == -360.0) {
-                exploreMesh->angle = 0.0;
+            if (playerMesh->angle == -360.0) {
+                playerMesh->angle = 0.0;
             }
         }
 
         else if (xMouse < mousePrevX) {
-            exploreMesh->angle += 0.5;
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->angle += 0.5;
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if ((playerMax.z > roomMax.z) || (playerMin.z < roomMin.z) ||
                 (playerMax.x > roomMax.x) || (playerMin.x < roomMin.x)) {
-                exploreMesh->angle -= 0.5;
+                playerMesh->angle -= 0.5;
             }
-            if (exploreMesh->angle == 360.0) {
-                exploreMesh->angle = 0.0;
+            if (playerMesh->angle == 360.0) {
+                playerMesh->angle = 0.0;
             }
         }
 
@@ -423,27 +520,6 @@ void mouseMotionHandler(int xMouse, int yMouse)
     glutPostRedisplay();
 }
 
-
-VECTOR3D ScreenToWorld(int x, int y)
-{
-    GLint viewport[4];
-    GLdouble modelview[16];
-    GLdouble projection[16];
-    GLfloat winX, winY, winZ;
-    GLdouble posX, posY, posZ;
-
-    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-    glGetDoublev( GL_PROJECTION_MATRIX, projection );
-    glGetIntegerv( GL_VIEWPORT, viewport );
-
-    winX = (float)x;
-    winY = (float)viewport[3] - (float)y;
-    // Read all pixels at given screen XY from the Depth Buffer
-    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-    return VECTOR3D((float)posX, (float)posY, (float)posZ);
-}// ScreenToWorld()
-
 /* Handles input from the keyboard, non-arrow keys */
 void keyboard(unsigned char key, int x, int y)
 {
@@ -452,106 +528,97 @@ void keyboard(unsigned char key, int x, int y)
     switch (key)
     {
         case 'w':
-            exploreMesh->tx += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->tz -= exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->tx += playerMoveSpeed * cos(playerMesh->angle * 2 * PI / 360);
+            playerMesh->tz -= playerMoveSpeed * sin(playerMesh->angle * 2 * PI / 360);
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if (playerMax.z > roomMax.z){
-                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
             }
             else if (playerMin.z < roomMin.z) {
-                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
             }
             if (playerMax.x > roomMax.x) {
-                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
             }
             else if (playerMin.x < roomMin.x) {
-                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
             }
             break;
         case 's':
-            exploreMesh->tx -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->tz += exploreSpeed * sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->tx -= playerMoveSpeed * cos(playerMesh->angle * 2 * PI / 360);
+            playerMesh->tz += playerMoveSpeed * sin(playerMesh->angle * 2 * PI / 360);
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if (playerMax.z > roomMax.z){
-                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
             }
             else if (playerMin.z < roomMin.z) {
-                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
             }
             if (playerMax.x > roomMax.x) {
-                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
             }
             else if (playerMin.x < roomMin.x) {
-                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
             }
             break;
         case 'a':
-            exploreMesh->tx += exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->tz -= exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->tx += playerMoveSpeed * -sin(playerMesh->angle * 2 * PI / 360);
+            playerMesh->tz -= playerMoveSpeed * cos(playerMesh->angle * 2 * PI / 360);
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if (playerMax.z > roomMax.z){
-                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
             }
             else if (playerMin.z < roomMin.z) {
-                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
             }
             if (playerMax.x > roomMax.x) {
-                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
             }
             else if (playerMin.x < roomMin.x) {
-                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
             }
             break;
         case 'd':
-            exploreMesh->tx -= exploreSpeed * -sin(exploreMesh->angle*2*PI/360);
-            exploreMesh->tz += exploreSpeed * cos(exploreMesh->angle*2*PI/360);
-            exploreMesh->getBBox(&playerMin, &playerMax);
-            level->getRoomBBox(&roomMin, &roomMax, exploreMesh->getPos());
+            playerMesh->tx -= playerMoveSpeed * -sin(playerMesh->angle * 2 * PI / 360);
+            playerMesh->tz += playerMoveSpeed * cos(playerMesh->angle * 2 * PI / 360);
+            playerMesh->getBBox(&playerMin, &playerMax);
+            level->getRoomBBox(&roomMin, &roomMax, playerMesh->getPos());
             if (playerMax.z > roomMax.z){
-                exploreMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMax.z - 0.5 * (playerMax.z - playerMin.z);
             }
             else if (playerMin.z < roomMin.z) {
-                exploreMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
+                playerMesh->tz = roomMin.z + 0.5 * (playerMax.z - playerMin.z);
             }
             if (playerMax.x > roomMax.x) {
-                exploreMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMax.x - 0.5 * (playerMax.x - playerMin.x);
             }
             else if (playerMin.x < roomMin.x) {
-                exploreMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
+                playerMesh->tx = roomMin.x + 0.5 * (playerMax.x - playerMin.x);
             }
             break;
 
             // For testing purposes only, to see rooms from outside.
 //        case 'z':
-//            exploreMesh->ty -= exploreSpeed;
+//            playerMesh->ty -= playerMoveSpeed;
 //            break;
 //        case 'x':
-//            exploreMesh->ty += exploreSpeed;
+//            playerMesh->ty += playerMoveSpeed;
 //            break;
-        case ' ':
-            cout << "Hello" << endl;
-            break;
         case 'q':
             exit(0);
+        case ' ':
+            ProjectileMesh *tempProjectile = new ProjectileMesh(playerMesh);
+            level->projectileList.push_front(tempProjectile);
+            break;
+
     }
     glutPostRedisplay();
 }
 
 void functionKeys(int key, int x, int y){
-
-    //TODO: Add check for room bounding box to each movement.
-    VECTOR3D playerMin, playerMax;
-    VECTOR3D roomMin, roomMax;
-        // Do transformation code with arrow keys
-        // GLUT_KEY_DOWN, GLUT_KEY_UP,GLUT_KEY_RIGHT, GLUT_KEY_LEFT
-    if (key == GLUT_KEY_F1)
-    {
-        RobotMesh* newMesh = new RobotMesh(nullptr);
-        meshList.push_front(newMesh);
-    }
 
     glutPostRedisplay();
 }
