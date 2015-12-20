@@ -25,7 +25,7 @@ public:
     bool allRobotsDead();
     forward_list<ProjectileMesh*> projectileList;
     int curCount = 0;
-    int maxLevelRobots = 10;
+    int maxLevelRobots = 9;
     int robotsSoFar = 0;
 
 private:

@@ -46,7 +46,7 @@ enum Action currentAction = TRANSLATE;
 
 RobotMesh* playerMesh = NULL;
 GLdouble playerMoveSpeed = 0.5;
-int playerHealth = 40;
+int playerHealth = 10;
 
 Level* level = NULL;
 
